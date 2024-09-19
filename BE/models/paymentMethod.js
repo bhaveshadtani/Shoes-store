@@ -13,11 +13,12 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       allowNull: true,
     },
-    isActive: {
+    is_active: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: true,
-    }
+      defaultValue: true, // true for Active, false for Inactive
+      comment: "false: Inactive, true: Active",
+    },
   });
 
   return PaymentMethod;
