@@ -6,6 +6,7 @@ const userData = [
     password: "password1",
     hash_password:
       "$2b$10$abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdef",
+    role: "0",
   },
   {
     first_name: "Jane",
@@ -15,6 +16,7 @@ const userData = [
     password: "password2",
     hash_password:
       "$2b$10$abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdef",
+    role: "1",
   },
   {
     first_name: "Alice",
@@ -24,6 +26,7 @@ const userData = [
     phone_number: "9638524410",
     hash_password:
       "$2b$10$abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdef",
+    role: "1",
   },
   {
     first_name: "Bob",
@@ -33,6 +36,7 @@ const userData = [
     phone_number: "9655527410",
     hash_password:
       "$2b$10$abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdef",
+    role: "2",
   },
   {
     first_name: "Charlie",
@@ -42,6 +46,7 @@ const userData = [
     phone_number: "9638777410",
     hash_password:
       "$2b$10$abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdef",
+    role: "2",
   },
   {
     first_name: "Emma",
@@ -51,6 +56,7 @@ const userData = [
     phone_number: "9600527410",
     hash_password:
       "$2b$10$abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdef",
+    role: "2",
   },
   {
     first_name: "Olivia",
@@ -60,6 +66,7 @@ const userData = [
     phone_number: "9338527410",
     hash_password:
       "$2b$10$abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdef",
+    role: "2",
   },
   {
     first_name: "Liam",
@@ -69,6 +76,7 @@ const userData = [
     phone_number: "9938577410",
     hash_password:
       "$2b$10$abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdef",
+    role: "2",
   },
   {
     first_name: "Noah",
@@ -78,6 +86,7 @@ const userData = [
     phone_number: "9611527660",
     hash_password:
       "$2b$10$abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdef",
+    role: "2",
   },
   {
     first_name: "Sophia",
@@ -87,6 +96,7 @@ const userData = [
     phone_number: "6587527410",
     hash_password:
       "$2b$10$abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdef",
+    role: "2",
   },
   {
     first_name: "Mia",
@@ -96,6 +106,7 @@ const userData = [
     phone_number: "6897527410",
     hash_password:
       "$2b$10$abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdef",
+    role: "2",
   },
   {
     first_name: "Ethan",
@@ -105,6 +116,7 @@ const userData = [
     phone_number: "7838527410",
     hash_password:
       "$2b$10$abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdef",
+    role: "2",
   },
   {
     first_name: "Ava",
@@ -114,6 +126,7 @@ const userData = [
     phone_number: "8938527410",
     hash_password:
       "$2b$10$abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdef",
+    role: "2",
   },
   {
     first_name: "Isabella",
@@ -123,6 +136,7 @@ const userData = [
     phone_number: "9638274106",
     hash_password:
       "$2b$10$abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdef",
+    role: "2",
   },
   {
     first_name: "James",
@@ -132,6 +146,7 @@ const userData = [
     phone_number: "9627410353",
     hash_password:
       "$2b$10$abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdef",
+    role: "2",
   },
 ];
 

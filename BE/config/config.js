@@ -9,7 +9,8 @@ module.exports = {
   dialect: process.env.DB_DIALECT,
   migrationStorageTableName: "NodeMigration",
   timezone: "+05:30",
-  logging: (msg) => console.log(msg),
+  logging: false,
+  // logging: (msg) => console.log(msg),
   pool: {
     max: 5,
     min: 0,
