@@ -13,6 +13,12 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    full_name: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return `${this.first_name} ${this.last_name}`;
+      },
+    },
     email: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -24,11 +30,6 @@ module.exports = (sequelize, DataTypes) => {
     phone_number: {
       type: DataTypes.STRING(20),
       allowNull: false,
-      unique: true,
-      validate: {
-        isNumeric: true,
-        len: [10, 15],
-      },
     },
     profile_image: {
       type: DataTypes.STRING,
