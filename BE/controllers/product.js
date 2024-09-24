@@ -9,6 +9,8 @@ const ProductSize = db.productSize;
 const getSingleProduct = async (req, res) => {
   try {
     const { productId } = req.params;
+
+    // Fetch the main product with its details
     const product = await Product.findByPk(productId, {
       include: [
         { model: Category },
@@ -16,28 +18,33 @@ const getSingleProduct = async (req, res) => {
         { model: Size, through: ProductSize },
       ],
     });
+
+    // Check if the product exists
     if (!product) {
       throw new Error("Product not found");
     }
 
+    // Format sizes
     const sizes = product.sizes.map((size) => ({
       size: size.size,
       quantity: size.productSize.quantity,
     }));
 
-    // const relatedProducts = await Product.findAll({
-    //   where: {
-    //     categoryId: product.categoryId,
-    //   },
-    //   include: [
-    //     { model: Category },
-    //     { model: Brand },
-    //     { model: Size, through: ProductSize },
-    //   ],
-    //   limit: 4,
-    //   order: [["createdAt", "DESC"]],
-    // });
-    return res.json({ ...product.toJSON(), sizes });
+    // Fetch related products (from the same category, gender)
+    const relatedProducts = await Product.findAll({
+      where: {
+        category_id: product.category_id,
+        gender: product.gender,
+        id: { [Op.ne]: product.id }, // Exclude the current product
+      },
+      limit: 5,
+      include: [{ model: Brand }, { model: Category }],
+    });
+
+    return res.json({
+      product: { ...product.toJSON(), sizes },
+      relatedProducts: relatedProducts.map((related) => related.toJSON()), // Format related products
+    });
   } catch (error) {
     console.log(error, "error");
     res.status(400).json({ message: error.message });
