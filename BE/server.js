@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use("/users", require("./routes/user"));
-// app.use("/products", require("./routes/product"));
+app.use("/products", require("./routes/product"));
 // app.use("/orders", require("./routes/order"));
 // app.use("/reviews", require("./routes/review"));
 // app.use("/cart", require("./routes/cart"));
