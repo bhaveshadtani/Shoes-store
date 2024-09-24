@@ -27,10 +27,27 @@ db.coupon = require("./coupon")(sequelize, DataTypes);
 db.review = require("./review")(sequelize, DataTypes);
 db.shippingAddress = require("./shippingAddress")(sequelize, DataTypes);
 db.size = require("./size")(sequelize, DataTypes);
+// db.color = require("./color")(sequelize, DataTypes);
 db.lot = require("./lot")(sequelize, DataTypes);
 db.inventory = require("./inventory")(sequelize, DataTypes);
 db.payment = require("./payment")(sequelize, DataTypes);
 db.paymentMethod = require("./paymentMethod")(sequelize, DataTypes);
+db.brand = require("./brand")(sequelize, DataTypes);
+db.category = require("./category")(sequelize, DataTypes);
+db.productSize = require("./productSize")(sequelize, DataTypes);
+
+// ASSOCIATIONS
+db.category.hasMany(db.product, { foreignKey: "category_id" });
+db.product.belongsTo(db.category, { foreignKey: "category_id" });
+
+db.brand.hasMany(db.product, { foreignKey: "brand_id" });
+db.product.belongsTo(db.brand, { foreignKey: "brand_id" });
+
+db.product.belongsToMany(db.size, { through: db.productSize });
+db.size.belongsToMany(db.product, { through: db.productSize });
+
+// db.product.belongsToMany(db.color, { through: db.productColor });
+// db.color.belongsToMany(db.product, { through: db.productColor });
 
 // sequelize
 //   .sync({ alter: true })

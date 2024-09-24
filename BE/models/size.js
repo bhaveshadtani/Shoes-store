@@ -6,10 +6,13 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true,
     },
     size: {
-      type: DataTypes.STRING(10),
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
+  },{
+    timestamps: false,
   });
 
+  // Size.sync({alter: true});
   return Size;
 };

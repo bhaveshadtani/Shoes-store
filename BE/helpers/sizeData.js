@@ -5,6 +5,7 @@ const sizeData = [
   { size: 4 },
   { size: 5 },
   { size: 6 },
+  { size: 7  },
   { size: 8 },
   { size: 9 },
   { size: 10 },
