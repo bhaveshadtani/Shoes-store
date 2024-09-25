@@ -63,6 +63,10 @@ const getSingleProduct = async (req, res) => {
         ],
       });
 
+      if (prod.length <= 0) {
+        throw new Error("Product not found");
+      }
+
       // Format product variations (size, color, quantity)
       const formattedProd = prod.map((product) => {
         const productVariations = product.productVariations.map((variant) => ({
