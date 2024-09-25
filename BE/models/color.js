@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
   },{
-    timestamps: false, // To avoid timestamps creation by Sequelize
+    timestamps: false,
   });
 
   // Color.sync({alter: true});

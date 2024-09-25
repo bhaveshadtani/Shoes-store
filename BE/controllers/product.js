@@ -4,46 +4,88 @@ const Product = db.product;
 const Category = db.category;
 const Brand = db.brand;
 const Size = db.size;
-const ProductSize = db.productSize;
+const Color = db.color;
+const ProductVariation = db.productVariation;
+const Image = db.image;
+const Review = db.review;
+const User = db.user;
 
 const getSingleProduct = async (req, res) => {
   try {
     const { productId } = req.params;
 
-    // Fetch the main product with its details
-    const product = await Product.findByPk(productId, {
-      include: [
-        { model: Category },
-        { model: Brand },
-        { model: Size, through: ProductSize },
-      ],
-    });
+    async function fetchProductDetails(product, isRelatedProduct) {
+      let whereCondition = {};
+      if (isRelatedProduct) {
+        whereCondition = {
+          category_id: product.category_id,
+          gender: product.gender,
+          id: { [Op.ne]: product.id }, // Exclude the current product
+        };
+      } else {
+        whereCondition.id = product;
+      }
 
-    // Check if the product exists
-    if (!product) {
-      throw new Error("Product not found");
+      const prod = await Product.findAll({
+        nest: true,
+        attributes: { exclude: ["createdAt", "updatedAt", "deletedAt"] },
+        where: whereCondition,
+        limit: 4, // Fetch related products
+        include: [
+          { model: Brand },
+          { model: Category },
+          { model: Image, attributes: ["url", "is_main"] },
+          {
+            model: ProductVariation,
+            attributes: ["quantity"],
+            include: [
+              {
+                model: Size,
+                attributes: ["size"],
+              },
+              {
+                model: Color,
+                attributes: ["color"],
+              },
+            ],
+          },
+          ...(!isRelatedProduct
+            ? [
+                {
+                  model: Review,
+                  attributes: ["rating", "review"],
+                  include: [
+                    { model: User, attributes: ["first_name", "last_name"] },
+                  ],
+                },
+              ]
+            : []),
+        ],
+      });
+
+      // Format product variations (size, color, quantity)
+      const formattedProd = prod.map((product) => {
+        const productVariations = product.productVariations.map((variant) => ({
+          size: variant.size.size,
+          color: variant.color.color,
+          quantity: variant.quantity,
+        }));
+
+        return {
+          ...product.toJSON(),
+          productVariations,
+        };
+      });
+
+      return formattedProd;
     }
 
-    // Format sizes
-    const sizes = product.sizes.map((size) => ({
-      size: size.size,
-      quantity: size.productSize.quantity,
-    }));
-
-    // Fetch related products (from the same category, gender)
-    const relatedProducts = await Product.findAll({
-      where: {
-        category_id: product.category_id,
-        gender: product.gender,
-        id: { [Op.ne]: product.id }, // Exclude the current product
-      },
-      limit: 5,
-      include: [{ model: Brand }, { model: Category }],
-    });
+    const productData = await fetchProductDetails(productId, false);
+    const relatedProducts = await fetchProductDetails(productData[0], true);
 
     return res.json({
-      product: { ...product.toJSON(), sizes },
-      relatedProducts: relatedProducts.map((related) => related.toJSON()), // Format related products
+      product: productData[0],
+      relatedProducts,
     });
   } catch (error) {
     console.log(error, "error");
@@ -53,8 +95,17 @@ const getSingleProduct = async (req, res) => {
 
 const filterProduct = async (req, res) => {
   try {
-    const { name, minPrice, maxPrice, category, brand, size, sort, order } =
-      req.query;
+    const {
+      name,
+      minPrice,
+      maxPrice,
+      category,
+      brand,
+      size,
+      color,
+      sort,
+      order,
+    } = req.query;
 
     const condition = {};
     const orderClause = [];
@@ -79,45 +130,38 @@ const filterProduct = async (req, res) => {
 
     const { count, rows } = await Product.findAndCountAll({
       nest: true,
+      // raw: true,
       distinct: true,
       include: [
         {
           model: Brand,
-          attributes: { exclude: ["createdAt", "updatedAt", "deletedAt"] },
           where: brand ? { name: { [Op.like]: `%${brand}%` } } : {},
         },
         {
           model: Category,
-          attributes: { exclude: ["createdAt", "updatedAt", "deletedAt"] },
           where: category ? { name: { [Op.like]: `%${category}%` } } : {},
         },
-
         {
-          model: Size,
-          attributes: { exclude: ["createdAt", "updatedAt", "deletedAt"] },
-          through: {
-            model: ProductSize,
-            attributes: { exclude: ["createdAt", "updatedAt", "deletedAt"] },
-          },
-          where: size ? { size: size } : {},
+          model: ProductVariation,
+          attributes: ["quantity"],
+          include: [
+            {
+              model: Size,
+              attributes: ["size"],
+              where: size ? { size: size } : {},
+            },
+            {
+              model: Color,
+              attributes: ["color"],
+              where: color ? { color: color } : {},
+            },
+          ],
         },
       ],
       order: orderClause,
       where: condition,
       offset: (page - 1) * itemsPerPage,
       limit: itemsPerPage,
-    });
-
-    // Transform the rows to modify the sizes structure
-    const formattedRows = rows.map((product) => {
-      const sizes = product.sizes.map((size) => ({
-        size: size.size,
-        quantity: size.productSize.quantity,
-      }));
-      return {
-        ...product.toJSON(),
-        sizes,
-      };
     });
 
     const pagination = {
@@ -128,7 +172,7 @@ const filterProduct = async (req, res) => {
     };
 
     return res.json({
-      data: formattedRows,
+      data: rows,
       pagination,
     });
   } catch (error) {

@@ -7,17 +7,34 @@ module.exports = (sequelize, DataTypes) => {
     },
     product_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      references: {
+        model: "Product",
+        key: "id",
+      },
     },
-    variation_name: {
-      type: DataTypes.STRING(50),
-      allowNull: false,
+    size_id: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: "Size",
+        key: "id",
+      },
     },
-    variation_value: {
-      type: DataTypes.STRING(50),
-      allowNull: false,
+    color_id: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: "Color",
+        key: "id",
+      },
     },
+    quantity: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
+  },{
+    timestamps: false,
   });
 
+  // ProductVariation.sync({alter: true})
   return ProductVariation;
 };

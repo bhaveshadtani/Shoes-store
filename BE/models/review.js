@@ -7,11 +7,17 @@ module.exports = (sequelize, DataTypes) => {
     },
     product_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      references: {
+        model: "Product",
+        key: "id",
+      },
     },
     user_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      references: {
+        model: "User",
+        key: "id",
+      },
     },
     rating: {
       type: DataTypes.INTEGER,
@@ -21,11 +27,14 @@ module.exports = (sequelize, DataTypes) => {
         max: 5,
       },
     },
-    comment: {
+    review: {
       type: DataTypes.TEXT,
       allowNull: true,
     },
+  },{
+    timestamps: false,
   });
 
+  // Review.sync({ alter: true });
   return Review;
 };

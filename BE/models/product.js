@@ -26,10 +26,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.ENUM("Men", "Women", "Kids"),
       allowNull: false,
     },
-    image_url: {
-      type: DataTypes.STRING(255),
-      allowNull: true,
-    },
+    // image_url: {
+    //   type: DataTypes.STRING(255),
+    //   allowNull: true,
+    // },
     category_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
