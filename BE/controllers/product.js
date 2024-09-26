@@ -172,6 +172,20 @@ const filterProduct = async (req, res) => {
       limit: itemsPerPage,
     });
 
+    // Format product variations (size, color, quantity)
+    const formatProduct = rows.map((product) => {
+      const productVariations = product.productVariations.map((variant) => ({
+        size: variant.size.size,
+        color: variant.color.color,
+        quantity: variant.quantity,
+      }));
+
+      return {
+        ...product.toJSON(),
+        productVariations,
+      };
+    });
+
     const pagination = {
       currentPage: page,
       itemsPerPage,
@@ -180,7 +194,7 @@ const filterProduct = async (req, res) => {
     };
 
     return res.json({
-      data: rows,
+      data: formatProduct,
       pagination,
     });
   } catch (error) {
