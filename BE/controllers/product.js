@@ -107,6 +107,7 @@ const filterProduct = async (req, res) => {
       brand,
       size,
       color,
+      gender,
       sort,
       order,
     } = req.query;
@@ -126,6 +127,9 @@ const filterProduct = async (req, res) => {
       condition.price = { [Op.gte]: minPrice };
     } else if (maxPrice) {
       condition.price = { [Op.lte]: maxPrice };
+    }
+    if (gender) {
+      condition.gender = gender;
     }
 
     if (sort && order) {
