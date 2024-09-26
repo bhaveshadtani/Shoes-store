@@ -26,10 +26,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.ENUM("Men", "Women", "Kids"),
       allowNull: false,
     },
-    // image_url: {
-    //   type: DataTypes.STRING(255),
-    //   allowNull: true,
-    // },
+    discount: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
+      defaultValue: 0.0,
+    },
     category_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -77,10 +78,10 @@ module.exports = (sequelize, DataTypes) => {
         attributes: ["name"],
       });
       const categoryName = category ? category.name : "";
-      const brandName = brand ? "by " + brand.name : "";
+      const brandName = brand ? brand.name : "";
 
       product.name =
-        `${product.name} ${product.gender}'s ${categoryName} ${brandName}`.trim();
+        `${brandName} ${product.name} ${product.gender}'s ${categoryName}`.trim();
     });
 
     // Wait for all promises to resolve
