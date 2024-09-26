@@ -139,6 +139,7 @@ const filterProduct = async (req, res) => {
     const { count, rows } = await Product.findAndCountAll({
       nest: true,
       // raw: true,
+      attributes: { exclude: ["createdAt", "deletedAt"] },
       distinct: true,
       include: [
         {
@@ -149,6 +150,7 @@ const filterProduct = async (req, res) => {
           model: Category,
           where: category ? { name: { [Op.like]: `%${category}%` } } : {},
         },
+        { model: Image, attributes: ["url"], where: { is_main: true } },
         {
           model: ProductVariation,
           attributes: ["quantity"],
@@ -172,16 +174,18 @@ const filterProduct = async (req, res) => {
       limit: itemsPerPage,
     });
 
-    // Format product variations (size, color, quantity)
+    // Format product variations (size, color, quantity, image)
     const formatProduct = rows.map((product) => {
       const productVariations = product.productVariations.map((variant) => ({
         size: variant.size.size,
         color: variant.color.color,
         quantity: variant.quantity,
       }));
+      const images = product.images.map((image) => image.url);
 
       return {
         ...product.toJSON(),
+        images: images[0],
         productVariations,
       };
     });
