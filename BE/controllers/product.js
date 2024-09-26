@@ -63,7 +63,7 @@ const getSingleProduct = async (req, res) => {
         ],
       });
 
-      if (prod.length <= 0) {
+      if (typeof product === "string" && prod.length <= 0) {
         throw new Error("Product not found");
       }
 
@@ -84,7 +84,9 @@ const getSingleProduct = async (req, res) => {
       return formattedProd;
     }
 
+    // Fetch product detail based on given ID
     const productData = await fetchProductDetails(productId, false);
+    // Fetch related products based on fetched product details
     const relatedProducts = await fetchProductDetails(productData[0], true);
 
     return res.json({
