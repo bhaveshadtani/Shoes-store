@@ -15,10 +15,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
       },
-      product_id: {
+      product_variant_id: {
         type: DataTypes.INTEGER,
         references: {
-          model: "Product",
+          model: "ProductVariation",
           key: "id",
         },
       },

@@ -7,22 +7,34 @@ module.exports = (sequelize, DataTypes) => {
     },
     cart_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      references: {
+        model: "Cart",
+        key: "id",
+      },
     },
     product_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      references: {
+        model: "Product",
+        key: "id",
+      },
     },
-    product_variation_id: {
+    product_variant_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      references: {
+        model: "ProductVariation",
+        key: "id",
+      },
     },
     quantity: {
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 1,
     },
+  },{
+    timestamps: false,
   });
 
+  // CartItem.sync({ alter: true });
   return CartItem;
 };

@@ -60,6 +60,7 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   Product.afterFind(async (products) => {
+    if (!products) return;
     if (!Array.isArray(products)) {
       products = [products];
     }

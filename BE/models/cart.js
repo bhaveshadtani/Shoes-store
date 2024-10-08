@@ -7,9 +7,13 @@ module.exports = (sequelize, DataTypes) => {
     },
     user_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      references: {
+        model: "User",
+        key: "id",
+      },
     },
   });
 
+  // Cart.sync({ alter: true });
   return Cart;
 };
