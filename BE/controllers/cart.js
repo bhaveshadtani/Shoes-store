@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const db = require("../models");
 const Product = db.product;
 const ProductVariation = db.productVariation;
@@ -216,81 +217,219 @@ const addCart = async (req, res) => {
   }
 };
 
+// const viewCart = async (req, res) => {
+//   try {
+//     const userId = req?.user?.userId || null;
+
+//     // If user is not logged in, check the cart in cookies
+//     if (!userId) {
+//       const cartData = req?.cookies?.cartData
+//         ? JSON.parse(req?.cookies?.cartData)
+//         : [];
+
+//       if (cartData.length !== 0) {
+//         // Format cart items from cookies
+//         const cartItems = await ProductVariation.findAll({
+//           where: {
+//             id: cartData.map((data) => data.product_variant_id),
+//             product_id: cartData.map((data) => data.product_id),
+//           },
+
+//           attributes: ["size_id", "color_id"],
+//           include: [
+//             {
+//               model: Product,
+//               attributes: {
+//                 exclude: [
+//                   "brand_id",
+//                   "category_id",
+//                   "description",
+//                   "updatedAt",
+//                   "createdAt",
+//                   "deletedAt",
+//                 ],
+//               },
+//               include: [{ model: Brand }, { model: Category }],
+//             },
+//             { model: Size, attributes: ["size"] },
+//             { model: Color, attributes: ["color"] },
+//             {
+//               model: Image,
+//               attributes: ["url"],
+//               where: { is_main: true },
+//               required: false,
+//             },
+//           ],
+//         });
+
+//         const formattedCartItems = formatCartItemsFromCookie(
+//           cartItems,
+//           cartData
+//         );
+
+//         return res.json({
+//           cart: {
+//             userId: null,
+//             items:
+//               formattedCartItems.length === 0
+//                 ? "Your cart is currently empty."
+//                 : formattedCartItems,
+//           },
+//         });
+//       }
+
+//       // If no cookie exists, return an empty cart
+//       return res.json({
+//         cart: {
+//           userId: null,
+//           items: "Your cart is currently empty.",
+//         },
+//       });
+//     }
+
+//     // Handle logged-in users
+//     const userCart = await Cart.findOne({ where: { user_id: userId } });
+//     if (!userCart) throw new Error("User cart not found.");
+
+//     // Fetch cart items from the database, including product and variation details
+//     const cartItems = await CartItem.findAll({
+//       where: { cart_id: userCart.id },
+//       include: [
+//         {
+//           model: Product,
+//           attributes: [
+//             "id",
+//             "name",
+//             "gender",
+//             "price",
+//             "discount",
+//             "is_active",
+//             "is_featured",
+//           ],
+//           include: [
+//             { model: Brand, attributes: ["name"] },
+//             { model: Category, attributes: ["name"] },
+//           ],
+//         },
+//         {
+//           model: ProductVariation,
+//           attributes: ["size_id", "color_id"],
+//           include: [
+//             { model: Size, attributes: ["size"] },
+//             { model: Color, attributes: ["color"] },
+//             {
+//               model: Image,
+//               attributes: ["url"],
+//               where: { is_main: true },
+//             },
+//           ],
+//         },
+//       ],
+//     });
+
+//     // If there are no items in the cart
+//     if (cartItems.length === 0) {
+//       return res.json({
+//         cart: {
+//           userId,
+//           items: "Your cart is currently empty.",
+//         },
+//       });
+//     }
+
+//     // Format the cart items for the response
+//     const formattedCartItems = formatCartItemsFromDb(cartItems);
+
+//     return res.json({
+//       cart: {
+//         userId,
+//         items: formattedCartItems,
+//       },
+//     });
+//   } catch (error) {
+//     console.error("Error retrieving cart:", error);
+//     return res.status(400).json({ message: error.message });
+//   }
+// };
+
 const viewCart = async (req, res) => {
   try {
     const userId = req?.user?.userId || null;
 
-    // If user is not logged in, check the cart in cookies
+    // Helper: Return empty cart
+    const returnEmptyCart = (userId) => {
+      return res.json({
+        cart: {
+          userId,
+          items: "Your cart is currently empty.",
+        },
+      });
+    };
+
+    // Helper: Fetch product variation details for cookie-based cart
+    const getProductVariationsForCart = async (cartData) => {
+      const productVariantIds = cartData.map((data) => data.product_variant_id);
+
+      return await ProductVariation.findAll({
+        where: { id: { [Op.in]: productVariantIds } },
+
+        attributes: ["size_id", "color_id"],
+        include: [
+          {
+            model: Product,
+            attributes: [
+              "id",
+              "name",
+              "gender",
+              "price",
+              "discount",
+              "is_active",
+              "is_featured",
+            ],
+            include: [
+              { model: Brand, attributes: ["name"] },
+              { model: Category, attributes: ["name"] },
+            ],
+          },
+          { model: Size, attributes: ["size"] },
+          { model: Color, attributes: ["color"] },
+          {
+            model: Image,
+            attributes: ["url"],
+            where: { is_main: true },
+            required: false,
+          },
+        ],
+      });
+    };
+
+    // 1. Handle non-logged-in users (cookie-based cart)
     if (!userId) {
       const cartData = req?.cookies?.cartData
-        ? JSON.parse(req?.cookies?.cartData)
+        ? JSON.parse(req.cookies.cartData)
         : [];
+      if (cartData.length === 0) return returnEmptyCart(null);
 
-      if (cartData.length !== 0) {
-        // Format cart items from cookies
-        const cartItems = await ProductVariation.findAll({
-          where: {
-            id: cartData.map((data) => data.product_variant_id),
-            product_id: cartData.map((data) => data.product_id),
-          },
+      // Fetch product variations for the items stored in cookies
+      const cartItems = await getProductVariationsForCart(cartData);
+      const formattedCartItems = formatCartItems(cartItems, cartData);
 
-          attributes: ["size_id", "color_id"],
-          include: [
-            {
-              model: Product,
-              attributes: {
-                exclude: [
-                  "brand_id",
-                  "category_id",
-                  "description",
-                  "updatedAt",
-                  "createdAt",
-                  "deletedAt",
-                ],
-              },
-              include: [{ model: Brand }, { model: Category }],
-            },
-            { model: Size, attributes: ["size"] },
-            { model: Color, attributes: ["color"] },
-            {
-              model: Image,
-              attributes: ["url"],
-              where: { is_main: true },
-              required: false,
-            },
-          ],
-        });
-
-        const formattedCartItems = formatCartItemsFromCookie(
-          cartItems,
-          cartData
-        );
-
-        return res.json({
-          cart: {
-            userId: null,
-            items:
-              formattedCartItems.length === 0
-                ? "Your cart is currently empty."
-                : formattedCartItems,
-          },
-        });
-      }
-
-      // If no cookie exists, return an empty cart
       return res.json({
         cart: {
           userId: null,
-          items: "Your cart is currently empty.",
+          items:
+            formattedCartItems.length === 0
+              ? "Your cart is currently empty."
+              : formattedCartItems,
         },
       });
     }
 
-    // Handle logged-in users
+    // 2. Handle logged-in users
     const userCart = await Cart.findOne({ where: { user_id: userId } });
-    if (!userCart) throw new Error("User cart not found.");
+    if (!userCart) return returnEmptyCart(userId);
 
-    // Fetch cart items from the database, including product and variation details
+    // Fetch cart items from the database
     const cartItems = await CartItem.findAll({
       where: { cart_id: userCart.id },
       include: [
@@ -326,18 +465,9 @@ const viewCart = async (req, res) => {
       ],
     });
 
-    // If there are no items in the cart
-    if (cartItems.length === 0) {
-      return res.json({
-        cart: {
-          userId,
-          items: "Your cart is currently empty.",
-        },
-      });
-    }
+    if (cartItems.length === 0) return returnEmptyCart(userId);
 
-    // Format the cart items for the response
-    const formattedCartItems = formatCartItemsFromDb(cartItems);
+    const formattedCartItems = formatCartItems(cartItems);
 
     return res.json({
       cart: {
@@ -351,56 +481,38 @@ const viewCart = async (req, res) => {
   }
 };
 
-// Helper function to format cart items from cookies
-const formatCartItemsFromCookie = (cartItems, cartData) => {
-  return cartItems.map((item) => {
-    const cartItem = cartData.find(
-      (data) => data.product_id === item.product.id
-    );
+// Helper function to format cart items
+const formatCartItems = (items, cartData = null) => {
+  return items.map((item) => {
+    const cartItem = cartData
+      ? cartData.find((data) => data.product_id === item.product.id)
+      : null;
 
     return {
-      cart_item_id: null,
+      cart_item_id: !cartData ? item.id : null,
       product: {
         product_id: item.product.id,
         product_variant_id: item.product_variant_id,
         name: item.product.name,
         gender: item.product.gender,
-        quantity: cartItem ? cartItem.quantity : 0,
+        quantity: cartItem ? cartItem.quantity : cartData ? 0 : item.quantity,
         price: item.product.price,
         discount: item.product.discount,
         brand: item.product.brand.name,
         category: item.product.category.name,
-        image: item?.images[0]?.url || null,
-        size: item.size.size,
-        color: item.color.color,
+        image:
+          item.productVariation?.images[0]?.url || item?.images[0]?.url || null,
+        size: item.productVariation
+          ? item.productVariation.size.size
+          : item.size.size,
+        color: item.productVariation
+          ? item.productVariation.color.color
+          : item.color.color,
         is_active: item.product.is_active,
         is_featured: item.product.is_featured,
       },
     };
   });
-};
-
-// Helper function to format cart items from the database
-const formatCartItemsFromDb = (cartItems) => {
-  return cartItems.map((item) => ({
-    cart_item_id: item.id,
-    product: {
-      product_id: item.product.id,
-      product_variant_id: item.product_variant_id,
-      name: item.product.name,
-      gender: item.product.gender,
-      quantity: item.quantity,
-      price: item.product.price,
-      discount: item.product.discount,
-      brand: item.product.brand.name,
-      category: item.product.category.name,
-      image: item.productVariation?.images[0]?.url || null,
-      size: item.productVariation.size.size,
-      color: item.productVariation.color.color,
-      is_active: item.product.is_active,
-      is_featured: item.product.is_featured,
-    },
-  }));
 };
 
 const removeCart = async (req, res) => {
@@ -410,32 +522,30 @@ const removeCart = async (req, res) => {
 
     // Validate input
     if (!cart_item_id) {
-      throw new Error("Cart item ID is required.");
+      return res.status(400).json({ message: "Cart item ID is required." });
     }
 
-    // Find the user's cart
-    const userCart = await Cart.findOne({ where: { user_id: userId } });
-    if (!userCart) {
-      return res.status(404).json({ message: "Cart not found." });
-    }
-
-    // Find the cart item to remove
-    const cartItem = await CartItem.findOne({
-      where: {
-        id: cart_item_id,
-        cart_id: userCart.id,
-      },
-      include: [{ model: ProductVariation }],
+    // Find the user's cart and the cart item to remove
+    const userCart = await Cart.findOne({
+      where: { user_id: userId },
+      include: [
+        {
+          model: CartItem,
+          where: { id: cart_item_id },
+          include: [ProductVariation],
+        },
+      ],
     });
 
-    if (!cartItem) {
-      return res.status(404).json({ message: "Cart item not found." });
+    if (!userCart || !userCart.cartItems.length) {
+      return res.status(404).json({ message: "Cart or cart item not found." });
     }
 
+    const cartItem = userCart.cartItems[0];
+
     // Increase the quantity of the original product variant
-    const variation = cartItem.productVariation;
-    variation.quantity += cartItem.quantity; // Add back the quantity
-    await variation.save();
+    cartItem.productVariation.quantity += cartItem.quantity; // Add back the quantity
+    await cartItem.productVariation.save();
 
     // Remove the cart item
     await cartItem.destroy();
@@ -443,7 +553,7 @@ const removeCart = async (req, res) => {
     return res.json({ message: "Cart item removed successfully." });
   } catch (error) {
     console.error("Error removing from cart:", error);
-    res.status(400).json({ message: error.message });
+    return res.status(500).json({ message: "Internal server error." });
   }
 };
 
