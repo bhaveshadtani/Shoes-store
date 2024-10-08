@@ -1,5 +1,5 @@
 const db = require("../models");
-const { Op, where } = require("sequelize");
+const { Op, where, Sequelize } = require("sequelize");
 const Product = db.product;
 const Category = db.category;
 const Brand = db.brand;
@@ -10,88 +10,374 @@ const Image = db.image;
 const Review = db.review;
 const User = db.user;
 
+// const getSingleProduct = async (req, res) => {
+//   try {
+//     const { productId } = req.params;
+
+//     async function fetchProductDetails(product, isRelatedProduct) {
+//       let whereCondition = {};
+//       if (isRelatedProduct) {
+//         whereCondition = {
+//           category_id: product.category_id,
+//           gender: product.gender,
+//           id: { [Op.ne]: product.id }, // Exclude the current product
+//         };
+//       } else {
+//         whereCondition.id = product;
+//       }
+
+//       const prod = await Product.findAll({
+//         nest: true,
+//         attributes: { exclude: ["createdAt", "updatedAt", "deletedAt"] },
+//         where: whereCondition,
+//         limit: 4, // Fetch related products
+//         include: [
+//           { model: Brand },
+//           { model: Category },
+//           {
+//             model: ProductVariation,
+//             attributes: ["id", "quantity"],
+//             include: [
+//               { model: Image, attributes: ["url", "is_main"] },
+//               {
+//                 model: Size,
+//                 attributes: ["size"],
+//               },
+//               {
+//                 model: Color,
+//                 attributes: ["color"],
+//               },
+//             ],
+//           },
+//           ...(!isRelatedProduct
+//             ? [
+//                 {
+//                   model: Review,
+//                   attributes: ["rating", "review"],
+//                   include: [
+//                     { model: User, attributes: ["first_name", "last_name"] },
+//                   ],
+//                 },
+//               ]
+//             : []),
+//         ],
+//       });
+
+//       if (typeof product === "string" && prod.length <= 0) {
+//         throw new Error("Product not found");
+//       }
+
+//       // Format product variations (size, color, quantity)
+//       const formattedProd = prod.map((product) => {
+//         const productVariations = product.productVariations.map((variant) => ({
+//           id: variant.id,
+//           size: variant.size.size,
+//           color: variant.color.color,
+//           quantity: variant.quantity,
+//         }));
+
+//         return {
+//           ...product.toJSON(),
+//           productVariations,
+//         };
+//       });
+
+//       return formattedProd;
+//     }
+
+//     // Fetch product detail based on given ID
+//     const productData = await fetchProductDetails(productId, false);
+//     // Fetch related products based on fetched product details
+//     const relatedProducts = await fetchProductDetails(productData[0], true);
+
+//     return res.json({
+//       product: productData[0],
+//       relatedProducts,
+//     });
+//   } catch (error) {
+//     console.log(error, "error");
+//     res.status(400).json({ message: error.message });
+//   }
+// };
+
+// const getSingleProduct = async (req, res) => {
+//   try {
+//     const { productVariationId } = req.params;
+
+//     async function fetchProductDetails(productVariant, isRelatedProduct) {
+//       let whereCondition = {};
+//       if (isRelatedProduct) {
+//         whereCondition = {
+//           category_id: productVariant.product.category_id,
+//           gender: productVariant.product.gender,
+//           id: { [Op.ne]: productVariant.id }, // Exclude the current productVariant
+//         };
+//       } else {
+//         whereCondition.id = productVariant;
+//       }
+
+//       const relatedProducts = await Product.findAll({
+//         attributes: { exclude: ["createdAt", "updatedAt", "deletedAt"] },
+//         where: productVariant !== "string" ? whereCondition : {},
+//         include: [{ model: Brand }, { model: Category }],
+//         limit: 4, // Fetch related productVariant variations
+//       });
+
+//       // console.log(relatedProducts, "relatedProducts");
+
+//       const productVariations = await ProductVariation.findAll({
+//         nest: true,
+//         attributes: ["id", "quantity"],
+//         where: productVariant === "string" ? whereCondition : {},
+//         include: [
+//           {
+//             model: Product,
+//             where: productVariant !== "string" ? whereCondition : {},
+//             attributes: { exclude: ["createdAt", "updatedAt", "deletedAt"] },
+//             include: [{ model: Brand }, { model: Category }],
+//           },
+//           {
+//             model: Image,
+//             attributes: ["url", "is_main"],
+//           },
+//           {
+//             model: Size,
+//             attributes: ["size"],
+//           },
+//           {
+//             model: Color,
+//             attributes: ["color"],
+//           },
+//           ...(!isRelatedProduct
+//             ? [
+//                 {
+//                   model: Review,
+//                   attributes: ["rating", "review"],
+//                   include: [
+//                     { model: User, attributes: ["first_name", "last_name"] },
+//                   ],
+//                 },
+//               ]
+//             : []),
+//         ],
+//       });
+
+//       if (typeof productVariant === "string" && productVariations.length <= 0) {
+//         throw new Error("Product not found");
+//       }
+
+//       // Format productVariant variations (size, color, quantity)
+//       // const formattedProd = productVariations.map((productVariant) => {
+//       //   // console.log(productVariant.toJSON(), "******");
+//       //   const productVariations = {
+//       //     id: productVariant.id,
+//       //     brand: productVariant.product.brand.name,
+//       //     category: productVariant.product.category.name,
+//       //     size: productVariant.size.size,
+//       //     color: productVariant.color.color,
+//       //     quantity: productVariant.quantity,
+//       //   };
+
+//       //   return {
+//       //     ...productVariant.toJSON(),
+//       //     productVariations,
+//       //   };
+//       // });
+//       const formattedProd = productVariations.map((productVariant) => {
+//         return {
+//           id: productVariant.id,
+//           size: productVariant.size.size,
+//           color: productVariant.color.color,
+//           quantity: productVariant.quantity,
+//           product: {
+//             id: productVariant.product.id,
+//             name: productVariant.product.name,
+//             description: productVariant.product.description,
+//             price: productVariant.product.price,
+//             gender: productVariant.product.gender,
+//             discount: productVariant.product.discount,
+//             brand: productVariant.product.brand.name,
+//             category_id: productVariant.product.category.id,
+//             category: productVariant.product.category.name,
+//             is_active: productVariant.product.is_active,
+//             is_featured: productVariant.product.is_featured,
+//           },
+//           images: productVariant.images,
+//           ...relatedProducts,
+//         };
+//       });
+
+//       return formattedProd[0];
+//     }
+
+//     // Fetch productVariant detail based on given ID
+//     const productVariantData = await fetchProductDetails(
+//       productVariationId,
+//       false
+//     );
+//     // Fetch related products based on fetched productVariant details
+//     const relatedProducts = await fetchProductDetails(productVariantData, true);
+
+//     console.log(productVariantData, "formattedProdformattedProd******");
+//     return res.json({
+//       productVariantData: productVariantData,
+//       relatedProducts,
+//     });
+//   } catch (error) {
+//     console.log(error, "error");
+//     res.status(400).json({ message: error.message });
+//   }
+// };
+
 const getSingleProduct = async (req, res) => {
   try {
-    const { productId } = req.params;
+    const { productVariationId } = req.params;
 
-    async function fetchProductDetails(product, isRelatedProduct) {
-      let whereCondition = {};
-      if (isRelatedProduct) {
-        whereCondition = {
-          category_id: product.category_id,
-          gender: product.gender,
-          id: { [Op.ne]: product.id }, // Exclude the current product
-        };
-      } else {
-        whereCondition.id = product;
-      }
-
-      const prod = await Product.findAll({
-        nest: true,
-        attributes: { exclude: ["createdAt", "updatedAt", "deletedAt"] },
-        where: whereCondition,
-        limit: 4, // Fetch related products
+    // find specific product
+    const productVariation = await ProductVariation.findByPk(
+      productVariationId,
+      {
+        attributes: ["id", "quantity"],
         include: [
-          { model: Brand },
-          { model: Category },
-          { model: Image, attributes: ["url", "is_main"] },
           {
-            model: ProductVariation,
-            attributes: ["quantity"],
+            model: Product,
+            attributes: { exclude: ["brand_id", "createdAt", "deletedAt"] },
             include: [
+              { model: Brand, attributes: ["name"] },
+              { model: Category, attributes: ["name"] },
               {
-                model: Size,
-                attributes: ["size"],
-              },
-              {
-                model: Color,
-                attributes: ["color"],
+                model: ProductVariation,
+                attributes: ["id", "quantity"],
+                where: {
+                  quantity: { [Op.gt]: 0 },
+                },
+                include: [
+                  { model: Size },
+                  { model: Color },
+                  {
+                    model: Image,
+                    attributes: ["url"],
+                    where: { is_main: true },
+                  },
+                ],
+                where: {
+                  quantity: { [Op.gt]: 0 },
+                },
               },
             ],
           },
-          ...(!isRelatedProduct
-            ? [
-                {
-                  model: Review,
-                  attributes: ["rating", "review"],
-                  include: [
-                    { model: User, attributes: ["first_name", "last_name"] },
-                  ],
-                },
-              ]
-            : []),
+          { model: Image, attributes: ["url", "is_main"] },
+          {
+            model: Review,
+            attributes: ["rating", "review"],
+            include: [{ model: User, attributes: ["first_name", "last_name"] }],
+          },
         ],
-      });
-
-      if (typeof product === "string" && prod.length <= 0) {
-        throw new Error("Product not found");
       }
+    );
 
-      // Format product variations (size, color, quantity)
-      const formattedProd = prod.map((product) => {
-        const productVariations = product.productVariations.map((variant) => ({
-          size: variant.size.size,
-          color: variant.color.color,
-          quantity: variant.quantity,
-        }));
-
-        return {
-          ...product.toJSON(),
-          productVariations,
-        };
-      });
-
-      return formattedProd;
+    if (!productVariation) {
+      return res.status(404).json({ message: "Product not found" });
     }
 
-    // Fetch product detail based on given ID
-    const productData = await fetchProductDetails(productId, false);
-    // Fetch related products based on fetched product details
-    const relatedProducts = await fetchProductDetails(productData[0], true);
+    const relatedProducts = await Product.findAll({
+      nest: true,
+      // raw: true,
+      attributes: {
+        exclude: ["brand_id", "createdAt", "updatedAt", "deletedAt"],
+      },
+      where: {
+        category_id: productVariation.product.category_id,
+        gender: productVariation.product.gender,
+        id: { [Op.ne]: productVariation.product.id },
+      },
+      include: [
+        {
+          model: ProductVariation,
+          attributes: ["id", "product_id", "quantity"],
+          include: [
+            { model: Size },
+            { model: Color },
+            {
+              model: Image,
+              attributes: ["url"],
+              where: { is_main: true },
+            },
+          ],
+          required: true,
+          where: {
+            quantity: { [Op.gt]: 0 },
+          },
+        },
+        { model: Brand, attributes: ["name"] },
+        { model: Category, attributes: ["name"] },
+      ],
+    });
+
+    // Format the related products
+    const formattedRelatedProducts = relatedProducts.map((product) => ({
+      product_id: product.id,
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      gender: product.gender,
+      discount: product.discount,
+      category_id: product.category_id,
+      is_active: product.is_active,
+      is_featured: product.is_featured,
+      brand_name: product.brand.name,
+      category_name: product.category.name,
+      productVariations: product.productVariations.map((variation) => ({
+        product_variant_id: variation.id,
+        product_id: variation.product_id,
+        quantity: variation.quantity,
+        size: variation.size.size,
+        color: variation.color.color,
+        main_image: {
+          url: variation.images[0].url,
+        },
+      })),
+    }));
+
+    // formatted product response
+    const formattedProductResponse = {
+      product_variant_id: productVariation.id,
+      product: {
+        product_id: productVariation.product.id,
+        name: productVariation.product.name,
+        description: productVariation.product.description,
+        price: productVariation.product.price,
+        gender: productVariation.product.gender,
+        discount: productVariation.product.discount,
+        category_id: productVariation.product.category_id,
+        is_active: productVariation.product.is_active,
+        is_featured: productVariation.product.is_featured,
+        updatedAt: productVariation.product.updatedAt,
+        brand_name: productVariation.product.brand.name,
+        category_name: productVariation.product.category.name,
+        productVariations: productVariation.product.productVariations.map(
+          (variation) => ({
+            product_variant_id: variation.id,
+            quantity: variation.quantity,
+            size: variation.size.size,
+            color: variation.color.color,
+            main_image: {
+              url: variation.images[0].url,
+            },
+          })
+        ),
+      },
+      images: productVariation.images,
+      reviews: productVariation.reviews.map((review) => ({
+        rating: review.rating,
+        review: review.review,
+        user_name: `${review.user.first_name} ${review.user.last_name}`,
+      })),
+    };
 
     return res.json({
-      product: productData[0],
-      relatedProducts,
+      productDetail: formattedProductResponse,
+      relatedProducts: formattedRelatedProducts,
     });
   } catch (error) {
     console.log(error, "error");
@@ -138,57 +424,74 @@ const filterProduct = async (req, res) => {
       orderClause.push([sort, order.toUpperCase() === "DESC" ? "DESC" : "ASC"]);
     }
 
-    const { count, rows } = await Product.findAndCountAll({
+    const { count, rows } = await ProductVariation.findAndCountAll({
       nest: true,
-      // raw: true,
-      attributes: { exclude: ["createdAt", "deletedAt"] },
+      attributes: ["id", "product_id", "quantity"],
       distinct: true,
       include: [
         {
-          model: Brand,
-          where: brand ? { name: { [Op.like]: `%${brand}%` } } : {},
-        },
-        {
-          model: Category,
-          where: category ? { name: { [Op.like]: `%${category}%` } } : {},
-        },
-        { model: Image, attributes: ["url"], where: { is_main: true } },
-        {
-          model: ProductVariation,
-          attributes: ["quantity"],
+          model: Product,
+          attributes: {
+            exclude: ["createdAt", "deletedAt", "brand_id", "category_id"],
+          },
           include: [
             {
-              model: Size,
-              attributes: ["size"],
-              where: size ? { size: size } : {},
+              model: Brand,
+              attributes: ["name"],
+              where: brand ? { name: { [Op.like]: `%${brand}%` } } : {},
             },
             {
-              model: Color,
-              attributes: ["color"],
-              where: color ? { color: color } : {},
+              model: Category,
+              attributes: ["name"],
+              where: category ? { name: { [Op.like]: `%${category}%` } } : {},
             },
           ],
+          where: condition,
+          order: orderClause.length > 0 ? orderClause : undefined,
+        },
+        {
+          model: Image,
+          attributes: ["url"],
+          where: { is_main: true },
+        },
+        {
+          model: Size,
+          attributes: ["size"],
+          where: size ? { size: size } : {},
+        },
+        {
+          model: Color,
+          attributes: ["color"],
+          where: color ? { color: color } : {},
         },
       ],
-      order: orderClause,
-      where: condition,
       offset: (page - 1) * itemsPerPage,
       limit: itemsPerPage,
     });
 
-    // Format product variations (size, color, quantity, image)
-    const formatProduct = rows.map((product) => {
-      const productVariations = product.productVariations.map((variant) => ({
-        size: variant.size.size,
-        color: variant.color.color,
-        quantity: variant.quantity,
-      }));
-      const images = product.images.map((image) => image.url);
-
+    // Transform the response
+    const transformedData = rows.map((row) => {
+      const product = row.product;
       return {
-        ...product.toJSON(),
-        images: images[0],
-        productVariations,
+        product_variant_id: row.id,
+        product_id: row.product_id,
+        product: {
+          id: product.id,
+          name: product.name,
+          description: product.description,
+          brand_name: product.brand.name,
+          category_name: product.category.name,
+          gender: product.gender,
+          price: product.price,
+          discount: product.discount,
+          is_active: product.is_active,
+          is_featured: product.is_featured,
+          updatedAt: product.updatedAt,
+        },
+        main_image: row.images[0],
+        size: row.size.size,
+        color: row.color.color,
+        quantity: row.quantity,
       };
     });
 
@@ -199,8 +502,9 @@ const filterProduct = async (req, res) => {
       totalPages: Math.ceil(count / itemsPerPage),
     };
 
-    return res.json({
-      data: formatProduct,
+    // Return the transformed response
+    res.json({
+      data: transformedData,
       pagination,
     });
   } catch (error) {

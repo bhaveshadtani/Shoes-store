@@ -60,14 +60,39 @@ db.productVariation.belongsTo(db.size, { foreignKey: "size_id" });
 db.color.hasMany(db.productVariation, { foreignKey: "color_id" });
 db.productVariation.belongsTo(db.color, { foreignKey: "color_id" });
 
-db.product.hasMany(db.review, { foreignKey: "product_id" });
-db.review.belongsTo(db.product, { foreignKey: "product_id" });
+db.productVariation.hasMany(db.review, {
+  foreignKey: "product_variant_id",
+  onDelete: "CASCADE",
+});
+db.review.belongsTo(db.productVariation, {
+  foreignKey: "product_variant_id",
+});
 
-db.user.hasMany(db.review, { foreignKey: "user_id" });
+db.user.hasMany(db.review, { foreignKey: "user_id", onDelete: "CASCADE" });
 db.review.belongsTo(db.user, { foreignKey: "user_id" });
 
-db.product.hasMany(db.image, { foreignKey: "product_id", onDelete: "CASCADE" });
-db.image.belongsTo(db.product, { foreignKey: "product_id" });
+db.productVariation.hasMany(db.image, {
+  foreignKey: "product_variant_id",
+  onDelete: "CASCADE",
+});
+db.image.belongsTo(db.productVariation, { foreignKey: "product_variant_id" });
+
+db.cart.hasMany(db.cartItem, { foreignKey: "cart_id", onDelete: "CASCADE" });
+db.cartItem.belongsTo(db.cart, { foreignKey: "cart_id" });
+
+db.product.hasMany(db.cartItem, {
+  foreignKey: "product_id",
+  onDelete: "CASCADE",
+});
+db.cartItem.belongsTo(db.product, { foreignKey: "product_id" });
+
+db.productVariation.hasOne(db.cartItem, {
+  foreignKey: "product_variant_id",
+  onDelete: "CASCADE",
+});
+db.cartItem.belongsTo(db.productVariation, {
+  foreignKey: "product_variant_id",
+});
 
 // sequelize
 //   .sync({ alter: true })
