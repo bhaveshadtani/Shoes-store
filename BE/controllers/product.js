@@ -282,7 +282,7 @@ const getSingleProduct = async (req, res) => {
 
     const relatedProducts = await Product.findAll({
       nest: true,
-      // raw: true,
+      raw: true,
       attributes: {
         exclude: ["brand_id", "createdAt", "updatedAt", "deletedAt"],
       },
@@ -312,6 +312,7 @@ const getSingleProduct = async (req, res) => {
         { model: Brand, attributes: ["name"] },
         { model: Category, attributes: ["name"] },
       ],
+      group: ["product_id", "color"],
     });
 
     // Format the related products
@@ -327,46 +328,38 @@ const getSingleProduct = async (req, res) => {
       is_featured: product.is_featured,
       brand_name: product.brand.name,
       category_name: product.category.name,
-      productVariations: product.productVariations.map((variation) => ({
-        product_variant_id: variation.id,
-        product_id: variation.product_id,
-        quantity: variation.quantity,
-        size: variation.size.size,
-        color: variation.color.color,
-        main_image: {
-          url: variation.images[0].url,
-        },
-      })),
+      product_variant_id: product.productVariations.id,
+      product_id: product.productVariations.product_id,
+      quantity: product.productVariations.quantity,
+      size: product.productVariations.size.size,
+      color: product.productVariations.color.color,
+      image: product.productVariations.images.url,
     }));
 
     // formatted product response
     const formattedProductResponse = {
       product_variant_id: productVariation.id,
-      product: {
-        product_id: productVariation.product.id,
-        name: productVariation.product.name,
-        description: productVariation.product.description,
-        price: productVariation.product.price,
-        gender: productVariation.product.gender,
-        discount: productVariation.product.discount,
-        category_id: productVariation.product.category_id,
-        is_active: productVariation.product.is_active,
-        is_featured: productVariation.product.is_featured,
-        updatedAt: productVariation.product.updatedAt,
-        brand_name: productVariation.product.brand.name,
-        category_name: productVariation.product.category.name,
-        productVariations: productVariation.product.productVariations.map(
-          (variation) => ({
-            product_variant_id: variation.id,
-            quantity: variation.quantity,
-            size: variation.size.size,
-            color: variation.color.color,
-            main_image: {
-              url: variation.images[0].url,
-            },
-          })
-        ),
-      },
+      product_id: productVariation.product.id,
+      name: productVariation.product.name,
+      description: productVariation.product.description,
+      price: productVariation.product.price,
+      gender: productVariation.product.gender,
+      discount: productVariation.product.discount,
+      category_id: productVariation.product.category_id,
+      is_active: productVariation.product.is_active,
+      is_featured: productVariation.product.is_featured,
+      updatedAt: productVariation.product.updatedAt,
+      brand_name: productVariation.product.brand.name,
+      category_name: productVariation.product.category.name,
+      productVariations: productVariation.product.productVariations.map(
+        (variation) => ({
+          product_variant_id: variation.id,
+          quantity: variation.quantity,
+          size: variation.size.size,
+          color: variation.color.color,
+          image: variation.images[0].url,
+        })
+      ),
       images: productVariation.images,
       reviews: productVariation.reviews.map((review) => ({
         rating: review.rating,
@@ -488,7 +481,7 @@ const filterProduct = async (req, res) => {
           is_featured: product.is_featured,
           updatedAt: product.updatedAt,
         },
-        main_image: row.images[0],
+        image: row.images[0].url,
         size: row.size.size,
         color: row.color.color,
         quantity: row.quantity,
