@@ -419,7 +419,13 @@ const filterProduct = async (req, res) => {
 
     const { count, rows } = await ProductVariation.findAndCountAll({
       nest: true,
-      attributes: ["id", "product_id", "quantity"],
+      raw: true,
+      attributes: [
+        "id",
+        "product_id",
+        "quantity",
+        ...(sort ? [[db.sequelize.col(`Product.${sort}`), "sortBy"]] : []), // Only add this attribute if sort is provided
+      ],
       distinct: true,
       include: [
         {
@@ -440,7 +446,6 @@ const filterProduct = async (req, res) => {
             },
           ],
           where: condition,
-          order: orderClause.length > 0 ? orderClause : undefined,
         },
         {
           model: Image,
@@ -458,6 +463,14 @@ const filterProduct = async (req, res) => {
           where: color ? { color: color } : {},
         },
       ],
+      order: sort
+        ? [
+            [
+              db.sequelize.col("sortBy"),
+              order?.toUpperCase() === "DESC" ? "DESC" : "ASC",
+            ],
+          ]
+        : [],
       offset: (page - 1) * itemsPerPage,
       limit: itemsPerPage,
     });
@@ -468,20 +481,20 @@ const filterProduct = async (req, res) => {
       return {
         product_variant_id: row.id,
         product_id: row.product_id,
-        product: {
-          id: product.id,
-          name: product.name,
-          description: product.description,
-          brand_name: product.brand.name,
-          category_name: product.category.name,
-          gender: product.gender,
-          price: product.price,
-          discount: product.discount,
-          is_active: product.is_active,
-          is_featured: product.is_featured,
-          updatedAt: product.updatedAt,
-        },
-        image: row.images[0].url,
+        // product: {
+        // id: product.id,
+        name: product.name,
+        description: product.description,
+        brand_name: product.brand.name,
+        category_name: product.category.name,
+        gender: product.gender,
+        price: product.price,
+        discount: product.discount,
+        is_active: product.is_active,
+        is_featured: product.is_featured,
+        updatedAt: product.updatedAt,
+        // },
+        image: row.images.url,
         size: row.size.size,
         color: row.color.color,
         quantity: row.quantity,
