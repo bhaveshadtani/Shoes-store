@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
     },
     discount_type: {
-      type: DataTypes.STRING(20),
+      type: DataTypes.ENUM("percentage", "fixed"),
       allowNull: false,
     },
     discount_value: {
@@ -38,5 +38,6 @@ module.exports = (sequelize, DataTypes) => {
     },
   });
 
+  // Coupons.sync({alter:true})
   return Coupons;
 };
