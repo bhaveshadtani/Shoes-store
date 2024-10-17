@@ -6,17 +6,17 @@ const verify = async (req, res, next) => {
   const secretKey = process.env.JWT_SECRET_KEY;
   let token = req?.headers["authorization"]?.split(" ")[1] || null;
   try {
-    if (!token) {
-      return res.status(401).json({ message: "Token is required" });
-    }
+    // if (!token) {
+    //   return res.status(401).json({ message: "Token is required" });
+    // }
     const decoded = token
       ? await promisify(jwt.verify)(token, secretKey)
       : null;
 
     const user = await db.user.findByPk(decoded?.userId);
-    if (!user) {
-      throw new Error("User not found");
-    }
+    // if (!user) {
+    //   throw new Error("User not found /*/*");
+    // }
     req.user = {
       loggedUserId: decoded?.userId || null,
       loggedUserDetails: user?.toJSON() || {},
