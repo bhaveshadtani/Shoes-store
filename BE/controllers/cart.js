@@ -14,7 +14,7 @@ const Image = db.image;
 // const addCart = async (req, res) => {
 //   const transaction = await db.sequelize.transaction(); // Start a transaction
 //   try {
-//     const userId = req?.user?.userId || null;
+//     const { loggedUserId, loggedUserDetails } = req?.user || null;
 //     let { product_variant_id, product_id, quantity } = req.body;
 
 //     // Validate quantity
@@ -45,14 +45,14 @@ const Image = db.image;
 
 //     // Adjust logic based on user login state
 //     const updateCartLogic = async () => {
-//       if (userId) {
+//       if (loggedUserId) {
 //         let userCart = await Cart.findOne({
-//           where: { user_id: userId },
+//           where: { user_id: loggedUserId },
 //           transaction,
 //         });
 
 //         if (!userCart) {
-//           userCart = await Cart.create({ user_id: userId }, { transaction });
+//           userCart = await Cart.create({ user_id: loggedUserId }, { transaction });
 //         }
 
 //         // Check or create cart item
@@ -117,7 +117,8 @@ const Image = db.image;
 
 const addCart = async (req, res) => {
   try {
-    const userId = req?.user?.userId || null;
+    const loggedUserId = req?.user?.loggedUserId || null;
+    console.log(loggedUserId, "Logged in ***")
     let { product_variant_id, product_id, quantity } = req.body;
 
     // Validate quantity
@@ -146,11 +147,11 @@ const addCart = async (req, res) => {
       );
     }
 
-    if (userId) {
+    if (loggedUserId) {
       // User is logged in
-      let userCart = await Cart.findOne({ where: { user_id: userId } });
+      let userCart = await Cart.findOne({ where: { user_id: loggedUserId } });
       if (!userCart) {
-        userCart = await Cart.create({ user_id: userId });
+        userCart = await Cart.create({ user_id: loggedUserId });
       }
 
       // Check for existing cart item
@@ -208,7 +209,7 @@ const addCart = async (req, res) => {
       });
 
       return res.json({
-        message: "Product added/updated in cart successfully (not logged in).",
+        message: "Product added / updated in cart successfully (not logged in).",
       });
     }
   } catch (error) {
@@ -219,10 +220,10 @@ const addCart = async (req, res) => {
 
 // const viewCart = async (req, res) => {
 //   try {
-//     const userId = req?.user?.userId || null;
+//     const { loggedUserId, loggedUserDetails } = req?.user || null;
 
 //     // If user is not logged in, check the cart in cookies
-//     if (!userId) {
+//     if (!loggedUserId) {
 //       const cartData = req?.cookies?.cartData
 //         ? JSON.parse(req?.cookies?.cartData)
 //         : [];
@@ -269,7 +270,7 @@ const addCart = async (req, res) => {
 
 //         return res.json({
 //           cart: {
-//             userId: null,
+//             loggedUserId: null,
 //             items:
 //               formattedCartItems.length === 0
 //                 ? "Your cart is currently empty."
@@ -281,14 +282,14 @@ const addCart = async (req, res) => {
 //       // If no cookie exists, return an empty cart
 //       return res.json({
 //         cart: {
-//           userId: null,
+//           loggedUserId: null,
 //           items: "Your cart is currently empty.",
 //         },
 //       });
 //     }
 
 //     // Handle logged-in users
-//     const userCart = await Cart.findOne({ where: { user_id: userId } });
+//     const userCart = await Cart.findOne({ where: { user_id: loggedUserId } });
 //     if (!userCart) throw new Error("User cart not found.");
 
 //     // Fetch cart items from the database, including product and variation details
@@ -331,7 +332,7 @@ const addCart = async (req, res) => {
 //     if (cartItems.length === 0) {
 //       return res.json({
 //         cart: {
-//           userId,
+//           loggedUserId,
 //           items: "Your cart is currently empty.",
 //         },
 //       });
@@ -342,7 +343,7 @@ const addCart = async (req, res) => {
 
 //     return res.json({
 //       cart: {
-//         userId,
+//         loggedUserId,
 //         items: formattedCartItems,
 //       },
 //     });
@@ -354,13 +355,13 @@ const addCart = async (req, res) => {
 
 const viewCart = async (req, res) => {
   try {
-    const userId = req?.user?.userId || null;
+    const loggedUserId = req?.user?.loggedUserId || null;
 
     // Helper: Return empty cart
-    const returnEmptyCart = (userId) => {
+    const returnEmptyCart = (loggedUserId) => {
       return res.json({
         cart: {
-          userId,
+          loggedUserId,
           items: "Your cart is currently empty.",
         },
       });
@@ -404,7 +405,7 @@ const viewCart = async (req, res) => {
     };
 
     // 1. Handle non-logged-in users (cookie-based cart)
-    if (!userId) {
+    if (!loggedUserId) {
       const cartData = req?.cookies?.cartData
         ? JSON.parse(req.cookies.cartData)
         : [];
@@ -416,7 +417,7 @@ const viewCart = async (req, res) => {
 
       return res.json({
         cart: {
-          userId: null,
+          loggedUserId: null,
           items:
             formattedCartItems.length === 0
               ? "Your cart is currently empty."
@@ -426,8 +427,8 @@ const viewCart = async (req, res) => {
     }
 
     // 2. Handle logged-in users
-    const userCart = await Cart.findOne({ where: { user_id: userId } });
-    if (!userCart) return returnEmptyCart(userId);
+    const userCart = await Cart.findOne({ where: { user_id: loggedUserId } });
+    if (!userCart) return returnEmptyCart(loggedUserId);
 
     // Fetch cart items from the database
     const cartItems = await CartItem.findAll({
@@ -465,13 +466,13 @@ const viewCart = async (req, res) => {
       ],
     });
 
-    if (cartItems.length === 0) return returnEmptyCart(userId);
+    if (cartItems.length === 0) return returnEmptyCart(loggedUserId);
 
     const formattedCartItems = formatCartItems(cartItems);
 
     return res.json({
       cart: {
-        userId,
+        loggedUserId,
         items: formattedCartItems,
       },
     });
@@ -517,7 +518,7 @@ const formatCartItems = (items, cartData = null) => {
 
 const removeCart = async (req, res) => {
   try {
-    const userId = req?.user?.userId || null;
+    const loggedUserId = req?.user?.loggedUserId || null;
     const { cart_item_id } = req.body;
 
     // Validate input
@@ -527,7 +528,7 @@ const removeCart = async (req, res) => {
 
     // Find the user's cart and the cart item to remove
     const userCart = await Cart.findOne({
-      where: { user_id: userId },
+      where: { user_id: loggedUserId },
       include: [
         {
           model: CartItem,
