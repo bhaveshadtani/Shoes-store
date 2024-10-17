@@ -10,8 +10,8 @@ module.exports = (sequelize, DataTypes) => {
       references: {
         model: "User",
         key: "id",
-        onDelete: "CASCADE",
-        onUpdate: "CASCADE",
+        // onDelete: "CASCADE",
+        // onUpdate: "CASCADE",
       },
       allowNull: false,
     },
@@ -44,7 +44,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     address_type: {
-      type: DataTypes.ENUM("billing", "shipping", "same"),
+      type: DataTypes.ENUM("billing", "shipping"),
       allowNull: false,
     },
   });
