@@ -129,7 +129,24 @@ const getAddresses = async (req, res) => {
     const addresses = await UserAddress.findAll({
       where: { user_id: loggedUserId },
     });
-    return res.status(200).json(addresses);
+
+    const formatBillingResponse = await addresses.filter(
+      (address) => address.address_type === "billing"
+    );
+    const formatShippingResponse = await addresses.filter(
+      (address) => address.address_type === "shipping"
+    );
+
+    if (addresses.length === 0) {
+      return res.status(200).json({
+        message: "It looks like you don't have any saved addresses.",
+      });
+    }
+
+    return res.status(200).json({
+      billingAddress: formatBillingResponse,
+      shippingAddress: formatShippingResponse,
+    });
   } catch (error) {
     console.error("Error:", error);
     return res
