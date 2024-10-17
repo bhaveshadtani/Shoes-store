@@ -20,7 +20,8 @@ app.use(cookieParser()); // To parse cookies
 app.use("/users", require("./routes/user"));
 app.use("/products", require("./routes/product"));
 app.use("/cart", require("./routes/cart"));
-// app.use("/orders", require("./routes/order"));
+app.use("/coupon", require("./routes/coupon"));
+app.use("/orders", require("./routes/order"));
 // app.use("/reviews", require("./routes/review"));
 // app.use("/checkout", require("./routes/checkout"));
 // app.use("/shipping", require("./routes/shipping"));
