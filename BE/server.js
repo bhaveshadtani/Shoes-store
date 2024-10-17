@@ -21,7 +21,7 @@ app.use("/users", require("./routes/user"));
 app.use("/products", require("./routes/product"));
 app.use("/cart", require("./routes/cart"));
 app.use("/coupon", require("./routes/coupon"));
-app.use("/address", require("./routes/address.js"));
+app.use("/address", require("./routes/address"));
 app.use("/orders", require("./routes/order"));
 // app.use("/reviews", require("./routes/review"));
 // app.use("/checkout", require("./routes/checkout"));

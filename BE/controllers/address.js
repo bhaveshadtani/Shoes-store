@@ -112,6 +112,26 @@ const addEditAddress = async (req, res) => {
   }
 };
 
+const getAddresses = async (req, res) => {
+  try {
+    const loggedUserId = req?.user?.loggedUserId;
+    if (!loggedUserId) {
+      return res
+        .status(401)
+        .json({ message: "You must be logged in to view addresses." });
+    }
+    const addresses = await UserAddress.findAll({
+      where: { user_id: loggedUserId },
+    });
+    return res.status(200).json(addresses);
+  } catch (error) {
+    console.error("Error:", error);
+    return res
+      .status(500)
+      .json({ message: "An error occurred while retrieving addresses." });
+  }
+};
+
 const removeAddress = async (req, res) => {
   try {
     const { address_id } = req.params;
@@ -127,7 +147,7 @@ const removeAddress = async (req, res) => {
     const address = await UserAddress.findOne({
       where: {
         id: address_id,
-        user_id: loggedUserId, // Ensure the address belongs to the logged-in user
+        user_id: loggedUserId,
       },
     });
 
@@ -153,5 +173,6 @@ const removeAddress = async (req, res) => {
 
 module.exports = {
   addEditAddress,
+  getAddresses,
   removeAddress,
 };
