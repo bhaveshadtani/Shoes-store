@@ -7,14 +7,18 @@ module.exports = (sequelize, DataTypes) => {
     },
     order_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    product_id: {
-      type: DataTypes.INTEGER,
+      references: {
+        model: "Order",
+        key: "id",
+      },
       allowNull: false,
     },
     product_variant_id: {
       type: DataTypes.INTEGER,
+      references: {
+        model: "ProductVariation",
+        key: "id",
+      },
       allowNull: true,
     },
     quantity: {
@@ -29,5 +33,6 @@ module.exports = (sequelize, DataTypes) => {
     },
   });
 
+  // OrderItem.sync({ alter: true });
   return OrderItem;
 };
