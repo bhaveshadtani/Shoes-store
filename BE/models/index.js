@@ -25,13 +25,11 @@ db.orderItem = require("./orderItem")(sequelize, DataTypes);
 db.productVariation = require("./productVariation")(sequelize, DataTypes);
 db.coupon = require("./coupon")(sequelize, DataTypes);
 db.review = require("./review")(sequelize, DataTypes);
-db.shippingAddress = require("./shippingAddress")(sequelize, DataTypes);
+db.userAddress = require("./userAddress")(sequelize, DataTypes);
 db.size = require("./size")(sequelize, DataTypes);
 db.color = require("./color")(sequelize, DataTypes);
-db.productColor = require("./productColor")(sequelize, DataTypes);
 db.lot = require("./lot")(sequelize, DataTypes);
 db.inventory = require("./inventory")(sequelize, DataTypes);
-db.payment = require("./payment")(sequelize, DataTypes);
 db.paymentMethod = require("./paymentMethod")(sequelize, DataTypes);
 db.brand = require("./brand")(sequelize, DataTypes);
 db.category = require("./category")(sequelize, DataTypes);
@@ -93,6 +91,38 @@ db.productVariation.hasOne(db.cartItem, {
 db.cartItem.belongsTo(db.productVariation, {
   foreignKey: "product_variant_id",
 });
+
+db.user.hasMany(db.userAddress, { foreignKey: "user_id", onDelete: "CASCADE" });
+db.userAddress.belongsTo(db.user, { foreignKey: "user_id" });
+
+db.user.hasMany(db.order, { foreignKey: "user_id" });
+db.order.belongsTo(db.user, { foreignKey: "user_id" });
+
+db.userAddress.hasMany(db.order, {
+  foreignKey: "billing_address_id",
+  as: "billingOrders",
+});
+db.order.belongsTo(db.userAddress, {
+  foreignKey: "billing_address_id",
+  as: "billingOrders",
+});
+
+db.userAddress.hasMany(db.order, {
+  foreignKey: "shipping_address_id",
+  as: "shippingOrders",
+});
+db.order.belongsTo(db.userAddress, {
+  foreignKey: "shipping_address_id",
+  as: "shippingOrders",
+});
+
+db.paymentMethod.hasMany(db.order, { foreignKey: "payment_method_id" });
+db.order.belongsTo(db.paymentMethod, { foreignKey: "payment_method_id" });
+
+db.order.hasMany(db.orderItem, { foreignKey: "order_id", onDelete: "CASCADE" });
+db.orderItem.belongsTo(db.order, { foreignKey: "order_id" });
+
+// db.orderItem.belongsTo(db.productVariation, { foreignKey: "product_variation_id" });
 
 // sequelize
 //   .sync({ alter: true })
