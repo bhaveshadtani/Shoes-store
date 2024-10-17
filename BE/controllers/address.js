@@ -41,6 +41,12 @@ const addEditAddress = async (req, res) => {
 
     // Function to create a new address
     const createAddress = async (address) => {
+      const getShippingAddressCount = await UserAddress.count({
+        where: { user_id: loggedUserId, address_type: "shipping" },
+      });
+      if (getShippingAddressCount >= 4) {
+        throw new Error("You can add upto four shipping addresses.");
+      }
       return await UserAddress.create({
         user_id: loggedUserId,
         ...address,
