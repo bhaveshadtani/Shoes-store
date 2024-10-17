@@ -127,7 +127,9 @@ const getAddresses = async (req, res) => {
         .json({ message: "You must be logged in to view addresses." });
     }
     const addresses = await UserAddress.findAll({
+      attributes: { exclude: ["createdAt", "updatedAt", "deletedAt"] },
       where: { user_id: loggedUserId },
+      order: [["updated_at", "DESC"]],
     });
 
     const formatBillingResponse = await addresses.filter(
