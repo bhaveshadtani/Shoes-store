@@ -187,7 +187,9 @@ const removeAddress = async (req, res) => {
     if (!removeAdd) {
       return res.status(400).json({ message: "Something went wrong." });
     }
-    return res.status(200).json({ message: "Address removed successfully." });
+    return res
+      .status(200)
+      .json({ message: "Your address has been deleted successfully!" });
   } catch (error) {
     console.error("Error:", error);
     return res
