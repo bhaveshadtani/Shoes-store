@@ -98,23 +98,6 @@ db.userAddress.belongsTo(db.user, { foreignKey: "user_id" });
 db.user.hasMany(db.order, { foreignKey: "user_id" });
 db.order.belongsTo(db.user, { foreignKey: "user_id" });
 
-db.userAddress.hasMany(db.order, {
-  foreignKey: "billing_address_id",
-  as: "billingOrders",
-});
-db.order.belongsTo(db.userAddress, {
-  foreignKey: "billing_address_id",
-  as: "billingOrders",
-});
-
-db.userAddress.hasMany(db.order, {
-  foreignKey: "shipping_address_id",
-  as: "shippingOrders",
-});
-db.order.belongsTo(db.userAddress, {
-  foreignKey: "shipping_address_id",
-  as: "shippingOrders",
-});
 
 db.paymentMethod.hasMany(db.order, { foreignKey: "payment_method_id" });
 db.order.belongsTo(db.paymentMethod, { foreignKey: "payment_method_id" });
@@ -122,7 +105,10 @@ db.order.belongsTo(db.paymentMethod, { foreignKey: "payment_method_id" });
 db.order.hasMany(db.orderItem, { foreignKey: "order_id", onDelete: "CASCADE" });
 db.orderItem.belongsTo(db.order, { foreignKey: "order_id" });
 
-// db.orderItem.belongsTo(db.productVariation, { foreignKey: "product_variation_id" });
+db.productVariation.hasMany(db.orderItem, { foreignKey: "product_variant_id" });
+db.orderItem.belongsTo(db.productVariation, {
+  foreignKey: "product_variant_id",
+});
 
 // sequelize
 //   .sync({ alter: true })
