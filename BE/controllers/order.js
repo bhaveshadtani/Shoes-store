@@ -44,6 +44,8 @@ const placeOrder = async (req, res) => {
     // Calculate total price based on order items
     const orderItemsData = await Promise.all(
       orderItems.map(async (item) => {
+        if (item.quantity == 0)
+          throw new Error("Quantity should be greater than 0");
         const itemPrice = await ProductVariation.findByPk(
           item.product_variant_id
         );
@@ -200,7 +202,7 @@ const viewOrder = async (req, res) => {
       total_amount: order.total_amount,
       billing_address: order.billing_address,
       shipping_address: order.shipping_address,
-      order_items: order.orderItems.map(item => ({
+      order_items: order.orderItems.map((item) => ({
         id: item.id,
         product_variant_id: item.product_variant_id,
         quantity: item.quantity,
@@ -210,7 +212,7 @@ const viewOrder = async (req, res) => {
           name: item.productVariation.product.name,
           brand: item.productVariation.product.brand.name,
           category: item.productVariation.product.category.name,
-          images: item.productVariation.images.map(image => image.url),
+          images: item.productVariation.images.map((image) => image.url),
           size: item.productVariation.size.size,
           color: item.productVariation.color.color,
         },
