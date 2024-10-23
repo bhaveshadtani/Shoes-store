@@ -237,7 +237,7 @@ const getSingleProduct = async (req, res) => {
     const productVariation = await ProductVariation.findByPk(
       productVariationId,
       {
-        attributes: ["id", "quantity"],
+        attributes: ["id", "quantity", "unit_price"],
         include: [
           {
             model: Product,
@@ -247,7 +247,7 @@ const getSingleProduct = async (req, res) => {
               { model: Category, attributes: ["name"] },
               {
                 model: ProductVariation,
-                attributes: ["id", "quantity"],
+                attributes: ["id", "quantity", "unit_price"],
                 where: {
                   quantity: { [Op.gt]: 0 },
                 },
@@ -260,9 +260,6 @@ const getSingleProduct = async (req, res) => {
                     where: { is_main: true },
                   },
                 ],
-                where: {
-                  quantity: { [Op.gt]: 0 },
-                },
               },
             ],
           },
@@ -294,7 +291,7 @@ const getSingleProduct = async (req, res) => {
       include: [
         {
           model: ProductVariation,
-          attributes: ["id", "product_id", "quantity"],
+          attributes: ["id", "product_id", "quantity", "unit_price"],
           include: [
             { model: Size },
             { model: Color },
@@ -320,7 +317,7 @@ const getSingleProduct = async (req, res) => {
       product_id: product.id,
       name: product.name,
       description: product.description,
-      price: product.price,
+      unit_price: product.productVariations.unit_price,
       gender: product.gender,
       discount: product.discount,
       category_id: product.category_id,
@@ -342,7 +339,7 @@ const getSingleProduct = async (req, res) => {
       product_id: productVariation.product.id,
       name: productVariation.product.name,
       description: productVariation.product.description,
-      price: productVariation.product.price,
+      unit_price: productVariation.unit_price,
       gender: productVariation.product.gender,
       discount: productVariation.product.discount,
       category_id: productVariation.product.category_id,
@@ -389,33 +386,34 @@ const filterProduct = async (req, res) => {
       size,
       color,
       gender,
-      sort,
+      sort = "updated_at",
       order,
     } = req.query;
 
-    const condition = {};
+    const productCondition = {};
+    const variantCondition = {};
     const orderClause = [];
 
     const itemsPerPage = parseInt(req?.query?.items_per_page) || 10;
     const page = parseInt(req?.query?.page) || 1;
 
     if (name) {
-      condition.name = { [Op.like]: `%${name}%` };
+      productCondition.name = { [Op.like]: `%${name}%` };
     }
     if (minPrice && maxPrice) {
-      condition.price = { [Op.between]: [minPrice, maxPrice] };
+      variantCondition.unit_price = { [Op.between]: [minPrice, maxPrice] };
     } else if (minPrice) {
-      condition.price = { [Op.gte]: minPrice };
+      variantCondition.unit_price = { [Op.gte]: minPrice };
     } else if (maxPrice) {
-      condition.price = { [Op.lte]: maxPrice };
+      variantCondition.unit_price = { [Op.lte]: maxPrice };
     }
     if (gender) {
-      condition.gender = gender;
+      productCondition.gender = gender;
     }
 
-    if (sort && order) {
-      orderClause.push([sort, order.toUpperCase() === "DESC" ? "DESC" : "ASC"]);
-    }
+    // if (sort && order) {
+    //   orderClause.push([sort, order.toUpperCase() === "DESC" ? "DESC" : "ASC"]);
+    // }
 
     const { count, rows } = await ProductVariation.findAndCountAll({
       nest: true,
@@ -424,14 +422,18 @@ const filterProduct = async (req, res) => {
         "id",
         "product_id",
         "quantity",
-        ...(sort ? [[db.sequelize.col(`Product.${sort}`), "sortBy"]] : []), // Only add this attribute if sort is provided
+        "unit_price",
+        ...(sort === "unit_price"
+          ? [[db.sequelize.col(`ProductVariation.${sort}`), "sortBy"]]
+          : [[db.sequelize.col(`Product.${sort}`), "sortBy"]]),
       ],
+      where: variantCondition,
       distinct: true,
       include: [
         {
           model: Product,
           attributes: {
-            exclude: ["createdAt", "deletedAt", "brand_id", "category_id"],
+            exclude: ["createdAt", "deletedAt"],
           },
           include: [
             {
@@ -445,7 +447,7 @@ const filterProduct = async (req, res) => {
               where: category ? { name: { [Op.like]: `%${category}%` } } : {},
             },
           ],
-          where: condition,
+          where: productCondition,
         },
         {
           model: Image,
@@ -488,7 +490,7 @@ const filterProduct = async (req, res) => {
         brand_name: product.brand.name,
         category_name: product.category.name,
         gender: product.gender,
-        price: product.price,
+        unit_price: row.unit_price,
         discount: product.discount,
         is_active: product.is_active,
         is_featured: product.is_featured,

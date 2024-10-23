@@ -13,15 +13,15 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       allowNull: true,
     },
-    price: {
-      type: DataTypes.DECIMAL(10, 2),
-      allowNull: false,
-      defaultValue: 0.0,
-      validate: {
-        isDecimal: true, // Ensure price is a decimal
-        min: 0, // Ensure price is non-negative
-      },
-    },
+    // price1: {
+    //   type: DataTypes.DECIMAL(10, 2),
+    //   allowNull: false,
+    //   defaultValue: 0.0,
+    //   validate: {
+    //     isDecimal: true, // Ensure price is a decimal
+    //     min: 0, // Ensure price is non-negative
+    //   },
+    // },
     gender: {
       type: DataTypes.ENUM("Men", "Women", "Kids"),
       allowNull: false,

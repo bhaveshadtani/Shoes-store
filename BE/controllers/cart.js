@@ -382,7 +382,6 @@ const viewCart = async (req, res) => {
               "id",
               "name",
               "gender",
-              "price",
               "discount",
               "is_active",
               "is_featured",
@@ -440,7 +439,6 @@ const viewCart = async (req, res) => {
             "id",
             "name",
             "gender",
-            "price",
             "discount",
             "is_active",
             "is_featured",
@@ -452,7 +450,7 @@ const viewCart = async (req, res) => {
         },
         {
           model: ProductVariation,
-          attributes: ["size_id", "color_id"],
+          attributes: ["unit_price", "size_id", "color_id"],
           include: [
             { model: Size, attributes: ["size"] },
             { model: Color, attributes: ["color"] },
@@ -497,7 +495,7 @@ const formatCartItems = (items, cartData = null) => {
         name: item.product.name,
         gender: item.product.gender,
         quantity: cartItem ? cartItem.quantity : cartData ? 0 : item.quantity,
-        price: item.product.price,
+        unit_price: item.productVariation.unit_price,
         discount: item.product.discount,
         brand: item.product.brand.name,
         category: item.product.category.name,
@@ -550,6 +548,16 @@ const removeCart = async (req, res) => {
 
     // Remove the cart item
     await cartItem.destroy();
+
+    // Check if there are no more cart items then delete the cart
+    const updatedCart = await Cart.findOne({
+      where: { user_id: loggedUserId },
+      include: [CartItem],
+    });
+
+    if (updatedCart && updatedCart.cartItems.length === 0) {
+      await updatedCart.destroy(); // Delete the empty cart
+    }
 
     return res.json({ message: "Cart item removed successfully." });
   } catch (error) {
