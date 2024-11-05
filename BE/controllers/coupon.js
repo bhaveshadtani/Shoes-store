@@ -4,15 +4,19 @@ const User = db.user;
 const applyCoupon = async (req, res) => {
   try {
     const { user_id, total_amount, couponCode } = req.body;
-    res.status(200).json({
+    return res.status(200).json({
+      status: true,
+      message: "Coupon applied successfully!",
       user_id,
       total_amount,
       couponCode,
-      message: "Coupon applied successfully!",
     });
   } catch (error) {
     console.log(error, "error");
-    res.status(500).json({ message: "Something went wrong" });
+    return res.status(500).json({
+      status: false,
+      message: "Something went wrong",
+    });
   }
 };
 

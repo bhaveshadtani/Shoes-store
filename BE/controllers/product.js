@@ -274,7 +274,9 @@ const getSingleProduct = async (req, res) => {
     );
 
     if (!productVariation) {
-      return res.status(404).json({ message: "Product not found" });
+      return res
+        .status(404)
+        .json({ status: false, message: "Product not found" });
     }
 
     const relatedProducts = await Product.findAll({
@@ -365,13 +367,16 @@ const getSingleProduct = async (req, res) => {
       })),
     };
 
-    return res.json({
-      productDetail: formattedProductResponse,
-      relatedProducts: formattedRelatedProducts,
+    return res.status(200).json({
+      status: true,
+      data: {
+        productDetail: formattedProductResponse,
+        relatedProducts: formattedRelatedProducts,
+      },
     });
   } catch (error) {
     console.log(error, "error");
-    res.status(400).json({ message: error.message });
+    return res.status(400).json({ status: false, message: error.message });
   }
 };
 
@@ -511,13 +516,13 @@ const filterProduct = async (req, res) => {
     };
 
     // Return the transformed response
-    res.json({
-      data: transformedData,
-      pagination,
+    return res.status(200).json({
+      status: true,
+      data: { productData: transformedData, pagination },
     });
   } catch (error) {
     console.log(error, "error");
-    res.status(500).json({ message: "Something went wrong" });
+    return res.status(500).json({ status: false, message: "Something went wrong" });
   }
 };
 

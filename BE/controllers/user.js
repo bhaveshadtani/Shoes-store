@@ -9,22 +9,30 @@ const login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ where: { email } });
-    if (!user) {
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
-
-    const isMatch = await bcrypt.compare(password, user.hash_password);
+    const isMatch = user
+      ? await bcrypt.compare(password, user?.hash_password)
+      : false;
 
     if (!user || !isMatch) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(400).json({
+        success: false,
+        message: "Invalid credentials",
+      });
     }
 
     // GENERATE JWT TOKEN
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET_KEY);
-    return res.status(200).json({ user, token });
+    return res.status(200).json({
+      success: true,
+      message: "Login successful",
+      data: { user, token },
+    });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Something went wrong" });
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+    });
   }
 };
 
@@ -55,7 +63,10 @@ const register = async (req, res) => {
 
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
-      return res.status(400).json({ message: "Email already exists" });
+      return res.status(400).json({
+        success: false,
+        message: "Email already exists",
+      });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -74,18 +85,24 @@ const register = async (req, res) => {
     if (user) {
       // GENERATE JWT TOKEN
       const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET_KEY);
-      res.status(200).json({
-        user,
-        token,
+      return res.status(200).json({
+        success: true,
         message: "User registered successfully",
+        data: { user, token },
       });
     } else {
-      res.status(400).json({ message: "User not registered" });
+      return res.status(400).json({
+        success: false,
+        message: "User not registered",
+      });
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error, message: "Something went wrong" });
-    return;
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+      error,
+    });
   }
 };
 
@@ -94,9 +111,10 @@ const forgotPassword = async (req, res) => {
     const { email } = req.body;
     const user = await User.findOne({ where: { email } });
     if (!user) {
-      return res
-        .status(404)
-        .json({ message: "Please enter registered email address" });
+      return res.status(404).json({
+        success: false,
+        message: "Please enter registered email address",
+      });
     }
 
     const transporter = nodemailer.createTransport({
@@ -132,27 +150,40 @@ const forgotPassword = async (req, res) => {
         { where: { email } }
       );
       if (setPasswordResetToken) {
-        res
-          .status(200)
-          .json({ message: "Password reset link sent successfully" });
+        return res.status(200).json({
+          status: true,
+          message: "Password reset link sent successfully",
+        });
       }
     } else {
       console.error("Email sending failed:", info.rejected);
-      res.status(500).json({ message: "Failed to send password reset email" });
+      return res.status(500).json({
+        status: false,
+        message: "Failed to send password reset email",
+      });
     }
   } catch (error) {
     console.log(error, "error");
-    res.status(500).json({ message: "Something went wrong" });
+    return res.status(500).json({
+      status: false,
+      message: "Something went wrong",
+    });
   }
 };
 
 const logout = async (req, res) => {
   try {
     res.clearCookie("token");
-    res.status(200).json({ message: "Logged out successfully" });
+    return res.status(200).json({
+      status: true,
+      message: "Logged out successfully",
+    });
   } catch (error) {
     console.log(error, "error");
-    res.status(500).json({ message: "Something went wrong" });
+    return res.status(500).json({
+      status: false,
+      message: "Something went wrong",
+    });
   }
 };
 

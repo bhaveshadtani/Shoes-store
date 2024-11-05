@@ -118,7 +118,7 @@ const Image = db.image;
 const addCart = async (req, res) => {
   try {
     const loggedUserId = req?.user?.loggedUserId || null;
-    console.log(loggedUserId, "Logged in ***")
+    console.log(loggedUserId, "Logged in ***");
     let { product_variant_id, product_id, quantity } = req.body;
 
     // Validate quantity
@@ -131,6 +131,7 @@ const addCart = async (req, res) => {
     const variation = await ProductVariation.findByPk(product_variant_id);
     if (!productExists || !variation) {
       return res.status(400).json({
+        status: false,
         message: "Product or product variant does not exist.",
       });
     }
@@ -182,7 +183,8 @@ const addCart = async (req, res) => {
 
       await variation.save();
 
-      return res.json({
+      return res.status(200).json({
+        status: true,
         message: "Product quantity updated in cart successfully.",
       });
     } else {
@@ -208,13 +210,15 @@ const addCart = async (req, res) => {
         maxAge: 3600000, // 1 hour
       });
 
-      return res.json({
-        message: "Product added / updated in cart successfully (not logged in).",
+      return res.status(200).json({
+        status: true,
+        message:
+          "Product added / updated in cart successfully (not logged in).",
       });
     }
   } catch (error) {
     console.error("Error adding to cart:", error);
-    res.status(400).json({ message: error.message });
+    return res.status(400).json({ status: false, message: error.message });
   }
 };
 
@@ -359,10 +363,13 @@ const viewCart = async (req, res) => {
 
     // Helper: Return empty cart
     const returnEmptyCart = (loggedUserId) => {
-      return res.json({
-        cart: {
-          loggedUserId,
-          items: "Your cart is currently empty.",
+      return res.status(200).json({
+        status: true,
+        data: {
+          cart: {
+            loggedUserId,
+            items: "Your cart is currently empty.",
+          },
         },
       });
     };
@@ -414,13 +421,16 @@ const viewCart = async (req, res) => {
       const cartItems = await getProductVariationsForCart(cartData);
       const formattedCartItems = formatCartItems(cartItems, cartData);
 
-      return res.json({
-        cart: {
-          loggedUserId: null,
-          items:
-            formattedCartItems.length === 0
-              ? "Your cart is currently empty."
-              : formattedCartItems,
+      return res.status(200).json({
+        status: true,
+        data: {
+          cart: {
+            loggedUserId: null,
+            items:
+              formattedCartItems.length === 0
+                ? "Your cart is currently empty."
+                : formattedCartItems,
+          },
         },
       });
     }
@@ -468,15 +478,18 @@ const viewCart = async (req, res) => {
 
     const formattedCartItems = formatCartItems(cartItems);
 
-    return res.json({
-      cart: {
-        loggedUserId,
-        items: formattedCartItems,
+    return res.status(200).json({
+      status: true,
+      data: {
+        cart: {
+          loggedUserId,
+          items: formattedCartItems,
+        },
       },
     });
   } catch (error) {
     console.error("Error retrieving cart:", error);
-    return res.status(400).json({ message: error.message });
+    return res.status(400).json({ status: false, message: error.message });
   }
 };
 
@@ -521,7 +534,10 @@ const removeCart = async (req, res) => {
 
     // Validate input
     if (!cart_item_id) {
-      return res.status(400).json({ message: "Cart item ID is required." });
+      return res.status(400).json({
+        status: false,
+        message: "Cart item ID is required.",
+      });
     }
 
     // Find the user's cart and the cart item to remove
@@ -537,7 +553,10 @@ const removeCart = async (req, res) => {
     });
 
     if (!userCart || !userCart.cartItems.length) {
-      return res.status(404).json({ message: "Cart or cart item not found." });
+      return res.status(404).json({
+        status: false,
+        message: "Cart or cart item not found.",
+      });
     }
 
     const cartItem = userCart.cartItems[0];
@@ -559,10 +578,16 @@ const removeCart = async (req, res) => {
       await updatedCart.destroy(); // Delete the empty cart
     }
 
-    return res.json({ message: "Cart item removed successfully." });
+    return res.status(200).json({
+      status: true,
+      message: "Cart item removed successfully.",
+    });
   } catch (error) {
     console.error("Error removing from cart:", error);
-    return res.status(500).json({ message: "Internal server error." });
+    return res.status(500).json({
+      status: false,
+      message: "Internal server error.",
+    });
   }
 };
 

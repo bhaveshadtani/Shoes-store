@@ -105,16 +105,19 @@ const addEditAddress = async (req, res) => {
     // Process billing or shipping address
     const address = billingAddress || shippingAddress;
     if (!address) {
-      return res.status(400).json({ message: "No address provided." });
+      return res.status(400).json({
+        status: false,
+        message: "No address provided.",
+      });
     }
 
     validateParams(address);
     const result = await addOrUpdateAddress(address);
 
-    return res.status(200).json(result);
+    return res.status(200).json({ status: true, data: { result } });
   } catch (error) {
     console.error("Error:", error);
-    res.status(400).json({ message: error.message });
+    return res.status(400).json({ status: false, message: error.message });
   }
 };
 
@@ -122,9 +125,10 @@ const getAddresses = async (req, res) => {
   try {
     const loggedUserId = req?.user?.loggedUserId;
     if (!loggedUserId) {
-      return res
-        .status(401)
-        .json({ message: "You must be logged in to view addresses." });
+      return res.status(401).json({
+        status: false,
+        message: "You must be logged in to view addresses.",
+      });
     }
     const addresses = await UserAddress.findAll({
       attributes: { exclude: ["createdAt", "updatedAt", "deletedAt"] },
@@ -141,19 +145,24 @@ const getAddresses = async (req, res) => {
 
     if (addresses.length === 0) {
       return res.status(200).json({
+        status: true,
         message: "It looks like you don't have any saved addresses.",
       });
     }
 
     return res.status(200).json({
-      billingAddress: formatBillingResponse,
-      shippingAddress: formatShippingResponse,
+      status: true,
+      data: {
+        billingAddress: formatBillingResponse,
+        shippingAddress: formatShippingResponse,
+      },
     });
   } catch (error) {
     console.error("Error:", error);
-    return res
-      .status(500)
-      .json({ message: "An error occurred while retrieving addresses." });
+    return res.status(500).json({
+      status: false,
+      message: "An error occurred while retrieving addresses.",
+    });
   }
 };
 
@@ -163,9 +172,10 @@ const removeAddress = async (req, res) => {
     const loggedUserId = req?.user?.loggedUserId;
 
     if (!loggedUserId) {
-      return res
-        .status(401)
-        .json({ message: "You must be logged in to remove addresses." });
+      return res.status(401).json({
+        status: false,
+        message: "You must be logged in to remove addresses.",
+      });
     }
 
     // Find the address by primary key and user ID
@@ -177,24 +187,30 @@ const removeAddress = async (req, res) => {
     });
 
     if (!address) {
-      return res
-        .status(404)
-        .json({ message: "Address not found or unauthorized." });
+      return res.status(404).json({
+        status: false,
+        message: "Address not found or unauthorized.",
+      });
     }
 
     // Delete the address
     const removeAdd = await address.destroy();
     if (!removeAdd) {
-      return res.status(400).json({ message: "Something went wrong." });
+      return res.status(400).json({
+        status: false,
+        message: "Something went wrong.",
+      });
     }
-    return res
-      .status(200)
-      .json({ message: "Your address has been deleted successfully!" });
+    return res.status(200).json({
+      status: true,
+      message: "Your address has been deleted successfully!",
+    });
   } catch (error) {
     console.error("Error:", error);
-    return res
-      .status(500)
-      .json({ message: "An error occurred while removing the address." });
+    return res.status(500).json({
+      status: false,
+      message: "An error occurred while removing the address.",
+    });
   }
 };
 

@@ -114,14 +114,15 @@ const placeOrder = async (req, res) => {
     await t.commit();
 
     return res.status(200).json({
-      order_id: order.id,
+      status: true,
       message: "Your order has been placed successfully!",
+      order_id: order.id,
     });
   } catch (error) {
     // Rollback the transaction on error
     await t.rollback();
     console.error("Order Placement Error:", error);
-    return res.status(400).json({ message: error.message });
+    return res.status(400).json({ status: false, message: error.message });
   }
 };
 
@@ -190,7 +191,10 @@ const viewOrder = async (req, res) => {
     });
 
     if (!order) {
-      return res.status(404).json({ message: "Order not found." });
+      return res.status(404).json({
+        status: false,
+        message: "Order not found.",
+      });
     }
 
     // Prepare the response data
@@ -222,7 +226,9 @@ const viewOrder = async (req, res) => {
     return res.status(200).json(orderDetails);
   } catch (error) {
     console.error("Error fetching order details:", error);
-    return res.status(500).json({ message: "An error occurred while fetching the order." });
+    return res
+      .status(500)
+      .json({ message: "An error occurred while fetching the order." });
   }
 };
 
