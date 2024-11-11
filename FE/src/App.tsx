@@ -4,8 +4,8 @@ import "react-toastify/dist/ReactToastify.css";
 import Navbar from "./components/Navbar";
 import routes from "./routes";
 import Announcement from "./components/Announcement";
-import ShoeCarousel from "./components/ShoeCarousel";
-import Product from "./pages/product/Product";
+{/* import ShoeCarousel from "./components/ShoeCarousel";
+import Product from "./pages/product/Product"; */}
 
 const App = () => {
   return (
