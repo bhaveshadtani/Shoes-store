@@ -223,12 +223,16 @@ const viewOrder = async (req, res) => {
       })),
     };
 
-    return res.status(200).json(orderDetails);
+    return res.status(200).json({
+      status: true,
+      data: { orderDetails },
+    });
   } catch (error) {
     console.error("Error fetching order details:", error);
-    return res
-      .status(500)
-      .json({ message: "An error occurred while fetching the order." });
+    return res.status(500).json({
+      status: false,
+      message: error.message,
+    });
   }
 };
 
