@@ -508,7 +508,7 @@ const formatCartItems = (items, cartData = null) => {
         name: item.product.name,
         gender: item.product.gender,
         quantity: cartItem ? cartItem.quantity : cartData ? 0 : item.quantity,
-        unit_price: item.productVariation.unit_price,
+        unit_price: item.productVariation?.unit_price,
         discount: item.product.discount,
         brand: item.product.brand.name,
         category: item.product.category.name,
