@@ -6,7 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { setUserDetails } from "./userSlice";
-import ReCAPTCHA from "react-google-recaptcha";
+{/* import ReCAPTCHA from "react-google-recaptcha"; */}
 
 const loginSchema = Yup.object().shape({
   email: Yup.string()
