@@ -58,6 +58,7 @@ const Register = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  console.log(loader);
   const formik = useFormik({
     initialValues,
     validationSchema: registerSchema,
