@@ -1,13 +1,50 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ecommerce</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+
+<head>
+  <!-- Basic Meta Tags -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>SoleVibe - Walk with Vibe.</title>
+
+  <!-- Favicon and App Icons -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" type="image/png" href="/favicon.png" /> <!-- Fallback for browsers that don't support SVG -->
+
+  <!-- Open Graph Meta Tags (for better social media sharing) -->
+  <meta property="og:title" content="SoleVibe - Walk with Vibe." />
+  <meta property="og:site_name" content="SoleVibe" />
+  <meta property="og:description"
+    content="Explore stylish and comfortable shoes to keep you walking with vibe. Shop the latest collection at SoleVibe." />
+  <meta property="og:image" content="/og-image.jpg" /> <!-- Your image URL -->
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <!-- Twitter Card Meta Tags (for Twitter sharing) -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="SoleVibe - Walk with Vibe." />
+  <meta name="twitter:description"
+    content="Explore stylish and comfortable shoes to keep you walking with vibe. Shop the latest collection at SoleVibe." />
+  <meta name="twitter:image" content="/og-image.jpg" /> <!-- Your image URL -->
+
+  <!-- Apple Touch Icon (for iOS devices) -->
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+  <!-- Additional Metadata for SEO -->
+  <meta name="description"
+    content="SoleVibe offers trendy and comfortable footwear that lets you walk with confidence and style. Check out our new arrivals!" />
+  <meta name="keywords" content="shoes, footwear, comfort, style, fashion, SoleVibe, walking shoes, trendy shoes" />
+
+  <!-- Additional setup for responsive mobile -->
+  <meta name="robots" content="index, follow" />
+</head>
+
+<body>
+  <!-- React app will be rendered here -->
+  <div id="root"></div>
+
+  <!-- Vite's script tag to load your app -->
+  <script type="module" src="/src/main.tsx"></script>
+</body>
 </html>
