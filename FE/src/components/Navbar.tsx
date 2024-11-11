@@ -16,6 +16,8 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
 
+  console.log(loader);
+  
   const handleLogout = async () => {
     try {
       setLoader(true);
