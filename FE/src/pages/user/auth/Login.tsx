@@ -4,6 +4,9 @@ import { signIn } from "./core/_request";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { setUserDetails } from "./userSlice";
+import ReCAPTCHA from "react-google-recaptcha";
 
 const loginSchema = Yup.object().shape({
   email: Yup.string()
@@ -22,11 +25,18 @@ const initialValues = {
 const Login = () => {
   const [loader, setLoader] = useState<boolean>(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  // const [recaptchaValue, setRecaptchaValue] = useState<string | null>(null);
+  // const [recaptchaError, setRecaptchaError] = useState("");
 
   const formik = useFormik({
     initialValues,
     validationSchema: loginSchema,
     onSubmit: (values) => {
+      // if (!recaptchaValue) {
+      //   setRecaptchaError("Please complete the reCAPTCHA.");
+      //   return;
+      // }
       setLoader(true);
       signIn(values)
         .then((res: any) => {
@@ -34,6 +44,13 @@ const Login = () => {
             localStorage.setItem(
               "userDetails",
               JSON.stringify(res?.data?.user)
+            );
+            localStorage.setItem("authToken", JSON.stringify(res?.data?.token));
+            dispatch(
+              setUserDetails({
+                user: res?.data?.user,
+                token: res?.data?.token,
+              })
             );
             setLoader(false);
             toast.success(res?.message);
@@ -50,10 +67,17 @@ const Login = () => {
     },
   });
 
+  // const onReCAPTCHAChange = (value: string | null) => {
+  //   setRecaptchaValue(value);
+  //   if (value) {
+  //     setRecaptchaError("");
+  //   }
+  // };
+
   return (
     <>
       <div className="font-[sans-serif]">
-        <div className="min-h-screen flex fle-col items-center justify-center py-6 px-4">
+        <div className="min-h-[80vh] flex fle-col items-center justify-center py-6 px-4">
           <div className="grid md:grid-cols-2 items-center gap-10 max-w-6xl w-full">
             <div>
               <h2 className="lg:text-5xl text-4xl font-extrabold lg:leading-[55px] text-gray-800">
@@ -148,6 +172,17 @@ const Login = () => {
                     </a>
                   </div>
                 </div>
+                {/* <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div className="flex items-center">
+                    <ReCAPTCHA
+                      sitekey="6LddL3sqAAAAACVsQz7xRDgUfJ-Hapotaix025oT"
+                      onChange={onReCAPTCHAChange}
+                    />
+                    {recaptchaError && (
+                      <div className="text-danger">{recaptchaError}</div>
+                    )}
+                  </div>
+                </div> */}
               </div>
 
               <div className="!mt-8">

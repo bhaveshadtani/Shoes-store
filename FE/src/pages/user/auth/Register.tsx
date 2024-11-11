@@ -1,9 +1,11 @@
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import React, { useState } from "react";
+import { useState } from "react";
 import { signUp } from "./core/_request";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { setUserDetails } from "./userSlice";
 
 const initialValues = {
   first_name: "",
@@ -54,6 +56,7 @@ const registerSchema = Yup.object().shape({
 const Register = () => {
   const [loader, setLoader] = useState<boolean>(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const formik = useFormik({
     initialValues,
@@ -66,6 +69,13 @@ const Register = () => {
             localStorage.setItem(
               "userDetails",
               JSON.stringify(res?.data?.user)
+            );
+            localStorage.setItem("authToken", JSON.stringify(res?.data?.token));
+            dispatch(
+              setUserDetails({
+                user: res?.data?.user,
+                token: res?.data?.token,
+              })
             );
             setLoader(false);
             toast.success(res?.message, {

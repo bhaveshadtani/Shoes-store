@@ -12,4 +12,9 @@ const signUp = async (data: any): Promise<any> => {
   return response.data;
 };
 
-export { signIn, signUp };
+const signOut = async (): Promise<any> => {
+  const response = await axios.post(`${API_URL}/users/logout`);
+  return response.data;
+};
+
+export { signIn, signUp, signOut };
