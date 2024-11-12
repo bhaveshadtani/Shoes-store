@@ -2,7 +2,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useState } from "react";
 import { signUp } from "./core/_request";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { setUserDetails } from "./userSlice";
@@ -314,6 +314,18 @@ const Register = () => {
             </button>
           </div>
         </form>
+      </div>
+
+      <div className="text-center min-h-[90px] sm:p-6 p-4">
+        <p className="text-sm text-gray-800">
+          Already have an account?
+          <Link
+            to="/login"
+            className="text-blue-600 font-semibold hover:underline ml-1"
+          >
+            Sign In
+          </Link>
+        </p>
       </div>
     </div>
   );
