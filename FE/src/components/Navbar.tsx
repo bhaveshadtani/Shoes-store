@@ -5,6 +5,7 @@ import { persistor } from "../store/store";
 import { toast } from "react-toastify";
 import { signOut } from "../pages/user/auth/core/_request";
 import { useState } from "react";
+import profilePicture from "../assets/images/profile.png";
 
 const Navbar = () => {
   const [loader, setLoader] = useState<boolean>(false);
@@ -17,7 +18,7 @@ const Navbar = () => {
   const token = useSelector(selectToken);
 
   console.log(loader);
-  
+
   const handleLogout = async () => {
     try {
       setLoader(true);
@@ -181,7 +182,7 @@ const Navbar = () => {
               <div>
                 <button
                   onClick={handleAvatarClick}
-                  className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                  className="relative flex rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
                 >
                   <span className="absolute -inset-1.5" />
                   <span className="sr-only">Open user menu</span>
@@ -190,7 +191,7 @@ const Navbar = () => {
                     src={
                       token
                         ? "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                        : ""
+                        : profilePicture
                     }
                     className="h-8 w-8 rounded-full"
                   />
@@ -241,12 +242,12 @@ const Navbar = () => {
                 0
               </span>
             </span>
-            <button
+            {/* <button
               onClick={() => (!token ? navigate("/login") : handleLogout())}
               className="px-5 py-2 text-sm rounded-full text-white border-2 border-[#007bff] bg-[#007bff] hover:bg-[#004bff]"
             >
               {!token ? "Sign In" : "Sign Out"}
-            </button>
+            </button> */}
 
             <button id="toggleOpen" className="lg:hidden">
               <svg
