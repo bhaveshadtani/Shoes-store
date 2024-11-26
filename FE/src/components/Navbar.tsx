@@ -5,7 +5,7 @@ import { persistor } from "../store/store";
 import { toast } from "react-toastify";
 import { signOut } from "../pages/user/auth/core/_request";
 import { useState } from "react";
-import profilePicture from "../assets/images/profile.png";
+// import profilePicture from "../assets/images/profile.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
@@ -68,6 +68,8 @@ const Navbar = () => {
     closeMenu();
     handleLogout();
   };
+
+  console.log(loader, "Loader");
 
   return (
     <header className="flex bg-white border-b py-4 sm:px-8 px-6 font-[sans-serif] min-h-[80px] tracking-wide relative z-50">
