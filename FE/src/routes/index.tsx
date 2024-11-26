@@ -7,42 +7,33 @@ import ProductDetail from "../pages/product/ProductDetail";
 import Cart from "../pages/cart/Cart";
 import Checkout from "../pages/checkout/Checkout";
 import ProtectedRoutes from "./ProtectedRoutes";
+import Layout from "../components/Layout";
 
 const routes = (
   <>
-    {/* Home Route */}
-    <Route path="/" element={<Home />} />
+    <Route element={<Layout />}>
+      <Route path="/" element={<Home />} />
+      <Route path="/products" element={<Product />} />
+      <Route path="/cart" element={<Cart />} />
+    </Route>
 
     {/* Redirect to Home if Already Logged In */}
     <Route
       path="/login"
-      element={
-        localStorage.getItem("authToken") !== null ? (
-          <Navigate to="/" replace />
-        ) : (
-          <Login />
-        )
-      }
+      element={localStorage.getItem("authToken") ? <Navigate to="/" /> : <Login />}
     />
     <Route
       path="/register"
-      element={
-        localStorage.getItem("authToken") !== null ? (
-          <Navigate to="/" replace />
-        ) : (
-          <Register />
-        )
+      element={localStorage.getItem("authToken") ? <Navigate to="/" /> : <Register />
       }
     />
 
-    {/* Product Route */}
-    <Route path="/product" element={<Product />} />
-    <Route path="/cart" element={<Cart />} />
-
     {/* Protected Routes */}
     <Route element={<ProtectedRoutes />}>
+      <Route element={<Layout />}>
       <Route path="/product-detail" element={<ProductDetail />} />
       <Route path="/checkout" element={<Checkout />} />
+    </Route>
     </Route>
   </>
 );

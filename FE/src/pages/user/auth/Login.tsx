@@ -54,7 +54,7 @@ const Login = () => {
             );
             setLoader(false);
             toast.success(res?.message);
-            navigate("/product");
+            navigate("/");
           } else {
             setLoader(false);
             toast.error(res?.message);

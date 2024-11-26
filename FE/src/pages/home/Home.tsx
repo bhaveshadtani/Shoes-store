@@ -1,5 +1,11 @@
+import ShoeCarousel from "../../components/ShoeCarousel";
+import Product from "../product/Product";
+
 const Home = () => {
-  return <div>Home</div>;
+  return <>
+    <ShoeCarousel />
+    <Product />
+    </>;
 };
 
 export default Home;

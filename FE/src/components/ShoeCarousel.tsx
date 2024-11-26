@@ -8,21 +8,21 @@ const ShoeCarousel = () => {
       id: 1,
       title: "Summer Collection 2024",
       description: "Step into comfort with our latest designs",
-      image: "/api/placeholder/800/400",
+      image: "https://plus.unsplash.com/premium_photo-1663100769321-9eb8fe5a8e6b?q=80&w=2072&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       price: "$129.99",
     },
     {
       id: 2,
       title: "Sports Edition",
       description: "Premium running shoes for athletes",
-      image: "/api/placeholder/800/400",
+      image: "https://images.unsplash.com/photo-1578986175247-7d60c6df07c5?q=80&w=2094&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       price: "$159.99",
     },
     {
       id: 3,
       title: "Casual Comfort",
       description: "Everyday wear made stylish",
-      image: "/api/placeholder/800/400",
+      image: "https://images.unsplash.com/photo-1580906853149-f82f7601d205?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       price: "$99.99",
     },
   ];
@@ -42,7 +42,7 @@ const ShoeCarousel = () => {
   }, []);
 
   return (
-    <div className="relative w-full mx-auto h-96 overflow-hidden rounded-lg shadow-lg">
+    <div className="relative w-full h-[55vh] overflow-hidden rounded-lg shadow-lg">
       {/* Main carousel container */}
       <div
         className="flex transition-transform duration-500 ease-out h-full"
@@ -93,9 +93,8 @@ const ShoeCarousel = () => {
           <button
             key={index}
             onClick={() => setCurrentSlide(index)}
-            className={`w-3 h-3 rounded-full transition-colors ${
-              currentSlide === index ? "bg-white" : "bg-white/50"
-            }`}
+            className={`w-3 h-3 rounded-full transition-colors ${currentSlide === index ? "bg-white" : "bg-white/50"
+              }`}
           />
         ))}
       </div>
