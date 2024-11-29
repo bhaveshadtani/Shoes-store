@@ -1,29 +1,41 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { filterProduct } from "./core/_request";
+import { bestSellingProduct, latestArrivalProduct } from "./core/_request";
 import Loader from "../../components/Loader";
 import ErrorPage from "../../components/ErrorPage";
-import ProductCard from "../../components/ProductCard";
+import { ProductType } from "./types/product.types";
+import { ProductSection } from "./components/ProductSection";
+import { useProductPagination } from "./hooks/useProductPagination";
 
 const Product = () => {
-  const [products, setProducts] = useState<any[]>([]);
+  const [bestSellingProducts, setBestSellingProducts] = useState<ProductType[]>([]);
+  const [latestArrivalProducts, setLatestArrivalProducts] = useState<ProductType[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
-  // Show only 3 products by default
-  const displayedProducts = products.slice(0, 4);
+
+  const productsPerSection = 4;
+
+  const bestSellingPagination = useProductPagination(bestSellingProducts.length, productsPerSection);
+
+  const latestArrivalPagination = useProductPagination(latestArrivalProducts.length, productsPerSection);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const response = await filterProduct();
-        if (response?.status) {
-          setProducts(response?.data?.productData);
+        const [bestSellingResponse, latestArrivalResponse] = await Promise.all([
+          bestSellingProduct(),
+          latestArrivalProduct()
+        ])
+        if (bestSellingResponse?.status && Array.isArray(bestSellingResponse?.data)) {
+          const bestSelling = bestSellingResponse?.data?.filter((prod: ProductType) => prod?.is_featured);
+          setBestSellingProducts(bestSelling);
+        }
+        if (latestArrivalResponse?.status && Array.isArray(latestArrivalResponse?.data)) {
+          const latestArrivals = latestArrivalResponse?.data?.filter((prod: ProductType) => !prod?.is_featured);
+          setLatestArrivalProducts(latestArrivals);
         }
       } catch (err) {
         setError("Failed to fetch products.");
-        setLoading(false);
       } finally {
         setLoading(false);
       }
@@ -32,53 +44,29 @@ const Product = () => {
     fetchProducts();
   }, []);
 
-  if (loading) {
-    return <Loader />;
-  }
-
-  if (error) {
-    return <ErrorPage />;
-  }
+  if (loading) return <Loader />;
+  if (error) return <ErrorPage />;
 
   return (
     <>
-      <div className="font-[sans-serif] p-4 mx-auto mt-6 lg:max-w-7xl sm:max-w-full">
-        <div className="flex justify-between items-center mb-12">
-          <h2 className="text-4xl font-extrabold text-gray-800">Best Selling</h2>
-          {products.length > 3 && (
-            <button
-              onClick={() => navigate("/products")}
-              className="text-blue-600 font-semibold text-lg"
-            >
-              Browse All
-            </button>
-          )}
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {displayedProducts.map((prod) => (
-            <ProductCard key={prod.id} product={prod} />
-          ))}
-        </div>
-      </div>
-
-      <div className="font-[sans-serif] p-4 mx-auto my-6 lg:max-w-7xl sm:max-w-full">
-        <div className="flex justify-between items-center mb-12">
-          <h2 className="text-4xl font-extrabold text-gray-800">Premium Sneakers</h2>
-          {products.length > 3 && (
-            <button
-              onClick={() => navigate("/products")}
-              className="text-blue-600 font-semibold text-lg"
-            >
-              Browse All
-            </button>
-          )}
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {displayedProducts.map((prod) => (
-            <ProductCard key={prod.id} product={prod} />
-          ))}
-        </div>
-      </div>
+      <ProductSection
+        title="Best Selling"
+        // title="સૌથી વધુ વેચાતા | Best Selling"
+        products={bestSellingProducts}
+        currentPage={bestSellingPagination.currentPage}
+        productsPerPage={productsPerSection}
+        onPrevPage={bestSellingPagination.handlePrevPage}
+        onNextPage={bestSellingPagination.handleNextPage}
+      />
+      <ProductSection
+        title="Latest Arrivals"
+        // title="નવીનતમ આગમન | Latest Arrivals"
+        products={latestArrivalProducts}
+        currentPage={latestArrivalPagination.currentPage}
+        productsPerPage={productsPerSection}
+        onPrevPage={latestArrivalPagination.handlePrevPage}
+        onNextPage={latestArrivalPagination.handleNextPage}
+      />
     </>
   );
 };

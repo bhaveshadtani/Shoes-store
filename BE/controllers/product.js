@@ -1,5 +1,5 @@
 const db = require("../models");
-const { Op, where, Sequelize } = require("sequelize");
+const { Op, where, Sequelize, fn, col, literal } = require("sequelize");
 const Product = db.product;
 const Category = db.category;
 const Brand = db.brand;
@@ -522,11 +522,218 @@ const filterProduct = async (req, res) => {
     });
   } catch (error) {
     console.log(error, "error");
-    return res.status(500).json({ status: false, message: "Something went wrong" });
+    return res
+      .status(500)
+      .json({ status: false, message: "Something went wrong" });
+  }
+};
+
+const bestSellingProduct = async (req, res) => {
+  try {
+    const data = await ProductVariation.findAll({
+      nest: true,
+      raw: true,
+      attributes: ["id", "product_id", "quantity", "unit_price"],
+      distinct: true,
+      include: [
+        {
+          model: Product,
+          attributes: {
+            exclude: ["createdAt", "deletedAt"],
+          },
+          where: {
+            is_featured: 1,
+          },
+          include: [
+            {
+              model: Brand,
+              attributes: ["name"],
+            },
+            {
+              model: Category,
+              attributes: ["name"],
+            },
+          ],
+        },
+        {
+          model: Image,
+          attributes: ["url"],
+          where: { is_main: true },
+        },
+        {
+          model: Size,
+          attributes: ["size"],
+        },
+        {
+          model: Color,
+          attributes: ["color"],
+        },
+      ],
+      attributes: {
+        include: [
+          [
+            literal(
+              `(SELECT ROUND(COALESCE(ROUND(AVG(rating) * 2) / 2, 0), 1) FROM Review WHERE Review.product_variant_id = ProductVariation.id)`
+            ),
+            "average_rating",
+          ],
+        ],
+      },
+      limit: 20,
+    });
+
+    const transformedData = data.map((row) => {
+      row = JSON.parse(JSON.stringify(row));
+      const product = row.product;
+      console.log(row, "tow");
+      return {
+        product_variant_id: row.id,
+        product_id: row.product_id,
+        // product: {
+        // id: product.id,
+        name: product.name,
+        description: product.description,
+        brand_name: product.brand.name,
+        category_name: product.category.name,
+        gender: product.gender,
+        unit_price: row.unit_price,
+        discount: product.discount,
+        is_active: product.is_active,
+        is_featured: product.is_featured,
+        updatedAt: product.updatedAt,
+        // },
+        image: row.images.url,
+        size: row.size.size,
+        color: row.color.color,
+        quantity: row.quantity,
+        average_rating: row.average_rating || 0,
+      };
+    });
+
+    // If no products found
+    if (!data.length) {
+      return res
+        .status(404)
+        .json({ status: false, message: "No featured products found" });
+    }
+
+    return res.status(200).json({
+      status: true,
+      message: "Best selling products fetched successfully",
+      data: transformedData,
+    });
+  } catch (error) {
+    console.log(error, "error");
+    return res
+      .status(500)
+      .json({ status: false, message: "Something went wrong" });
+  }
+};
+
+const latestArrivalProduct = async (req, res) => {
+  try {
+    const data = await ProductVariation.findAll({
+      nest: true,
+      raw: true,
+      attributes: ["id", "product_id", "quantity", "unit_price"],
+      distinct: true,
+      include: [
+        {
+          model: Product,
+          attributes: {
+            exclude: ["createdAt", "deletedAt"],
+          },
+          where: {
+            is_featured: 0,
+          },
+          include: [
+            {
+              model: Brand,
+              attributes: ["name"],
+            },
+            {
+              model: Category,
+              attributes: ["name"],
+            },
+          ],
+        },
+        {
+          model: Image,
+          attributes: ["url"],
+          where: { is_main: true },
+        },
+        {
+          model: Size,
+          attributes: ["size"],
+        },
+        {
+          model: Color,
+          attributes: ["color"],
+        },
+      ],
+      attributes: {
+        include: [
+          [
+            literal(
+              `(SELECT ROUND(COALESCE(ROUND(AVG(rating) * 2) / 2, 0), 1) FROM Review WHERE Review.product_variant_id = ProductVariation.id)`
+            ),
+            "average_rating",
+          ],
+        ],
+      },
+      limit: 20,
+    });
+
+    const transformedData = data.map((row) => {
+      row = JSON.parse(JSON.stringify(row));
+      const product = row.product;
+      return {
+        product_variant_id: row.id,
+        product_id: row.product_id,
+        // product: {
+        // id: product.id,
+        name: product.name,
+        description: product.description,
+        brand_name: product.brand.name,
+        category_name: product.category.name,
+        gender: product.gender,
+        unit_price: row.unit_price,
+        discount: product.discount,
+        is_active: product.is_active,
+        is_featured: product.is_featured,
+        updatedAt: product.updatedAt,
+        // },
+        image: row.images.url,
+        size: row.size.size,
+        color: row.color.color,
+        quantity: row.quantity,
+        average_rating: row.average_rating || 0,
+      };
+    });
+
+    // If no products found
+    if (!data.length) {
+      return res
+        .status(404)
+        .json({ status: false, message: "No latest arrivals found" });
+    }
+
+    return res.status(200).json({
+      status: true,
+      message: "Latest arrival products fetched successfully",
+      data: transformedData,
+    });
+  } catch (error) {
+    console.log(error, "error");
+    return res
+      .status(500)
+      .json({ status: false, message: "Something went wrong" });
   }
 };
 
 module.exports = {
   getSingleProduct,
   filterProduct,
+  bestSellingProduct,
+  latestArrivalProduct,
 };
