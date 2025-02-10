@@ -2,11 +2,28 @@ import { useState, useEffect } from "react";
 
 const ShoeCarousel = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const currentYear = new Date().getFullYear();
+  // Function to get the current season based on the date
+  const getCurrentSeason = () => {
+    const currentDate = new Date();
+    const month = currentDate.getMonth() + 1; // Months are 0-based (0-11), so we add 1 to make it 1-12
+    const day = currentDate.getDate();
 
+    // Defining seasons based on date ranges
+    if ((month >= 6 && month <= 9) || (month === 6 && day >= 1) || (month === 9 && day <= 30)) {
+      return "Monsoon"; // June to September
+    } else if ((month >= 12 && month <= 3) || (month === 12 && day >= 21) || (month === 3 && day <= 20)) {
+      return "Winter"; // December to March
+    } else if (month >= 3 && month <= 6) {
+      return "Spring"; // March to June
+    } else {
+      return "Summer"; // Default to Summer for the rest
+    }
+  };
   const slides = [
     {
       id: 1,
-      title: "Summer Collection 2024",
+      title: `${getCurrentSeason()} Collection ${currentYear}`,
       description: "Step into comfort with our latest designs",
       image: "https://plus.unsplash.com/premium_photo-1663100769321-9eb8fe5a8e6b?q=80&w=2072&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       price: "$129.99",
@@ -51,7 +68,7 @@ const ShoeCarousel = () => {
         {slides.map((slide) => (
           <div key={slide.id} className="w-full flex-shrink-0 relative">
             <img
-              src={slide.imageSrc}
+              src={slide.image}
               alt={slide.title}
               className="w-full h-full object-cover"
             />

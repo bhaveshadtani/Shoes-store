@@ -5,14 +5,20 @@ import ErrorPage from "../../components/ErrorPage";
 import { ProductType } from "./types/product.types";
 import { ProductSection } from "./components/ProductSection";
 import { useProductPagination } from "./hooks/useProductPagination";
+import FirstCTA from "../../components/FirstCTA";
+import SecondCTA from "../../components/SecondCTA";
+import CustomerReviews from "../../components/CustomerReviews";
+import { useLocation } from "react-router-dom";
 
 const Product = () => {
   const [bestSellingProducts, setBestSellingProducts] = useState<ProductType[]>([]);
   const [latestArrivalProducts, setLatestArrivalProducts] = useState<ProductType[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
 
-  const productsPerSection = 4;
+  const productsPerSection = 8;
 
   const bestSellingPagination = useProductPagination(bestSellingProducts.length, productsPerSection);
 
@@ -34,7 +40,7 @@ const Product = () => {
           const latestArrivals = latestArrivalResponse?.data?.filter((prod: ProductType) => !prod?.is_featured);
           setLatestArrivalProducts(latestArrivals);
         }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         setError("Failed to fetch products.");
       } finally {
@@ -52,22 +58,28 @@ const Product = () => {
     <>
       <ProductSection
         title="Best Selling"
-        // title="સૌથી વધુ વેચાતા | Best Selling"
         products={bestSellingProducts}
         currentPage={bestSellingPagination.currentPage}
         productsPerPage={productsPerSection}
         onPrevPage={bestSellingPagination.handlePrevPage}
         onNextPage={bestSellingPagination.handleNextPage}
       />
+      {isHomePage && <FirstCTA />}
       <ProductSection
         title="Latest Arrivals"
-        // title="નવીનતમ આગમન | Latest Arrivals"
+        // title="Just Dropped"
         products={latestArrivalProducts}
         currentPage={latestArrivalPagination.currentPage}
         productsPerPage={productsPerSection}
         onPrevPage={latestArrivalPagination.handlePrevPage}
         onNextPage={latestArrivalPagination.handleNextPage}
       />
+      {isHomePage &&
+        <>
+          <SecondCTA />
+          <CustomerReviews />
+        </>
+      }
     </>
   );
 };

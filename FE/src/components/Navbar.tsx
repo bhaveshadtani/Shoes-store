@@ -72,7 +72,7 @@ const Navbar = () => {
   console.log(loader, "Loader");
 
   return (
-    <header className="flex bg-white border-b py-4 sm:px-8 px-6 font-[sans-serif] min-h-[80px] tracking-wide relative z-50">
+    <header className="flex bg-white border-b py-4 sm:px-8 px-6 font-[sans-serif] min-h-[80px] tracking-wide sticky top-0 z-50">
       <div className="flex flex-wrap items-center lg:gap-y-2 gap-4 w-full">
         <Link to="/">
           <img src="../../../images/logo.png" alt="LOGO" className="w-36" />

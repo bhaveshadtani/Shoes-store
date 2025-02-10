@@ -7,6 +7,7 @@ import { faHeart as faHeartSolid } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from "react";
 
 const ProductCard = ({ product }: { product: ProductType }) => {
+  console.log(product, "product")
   const discountPercent = Math.round(((parseFloat(product.discount) - parseFloat(product.unit_price)) / parseFloat(product.unit_price)) * 100)
   const [likedProducts, setLikedProducts] = useState<number[]>(() => {
     const savedLikes = localStorage.getItem('likedProducts');
@@ -29,6 +30,8 @@ const ProductCard = ({ product }: { product: ProductType }) => {
 
   const isLiked = likedProducts.includes(product.product_variant_id);
 
+  // console.log(product.is_featured === 0, "product.is_featured")
+
   return (
     <div className="bg-white shadow-lg rounded-lg overflow-hidden group transition-all transform hover:scale-105 hover:shadow-xl cursor-pointer relative">
       <div
@@ -40,18 +43,24 @@ const ProductCard = ({ product }: { product: ProductType }) => {
         />
       </div>
 
-      {product.discount && (
-        <span className="absolute top-3 left-3 bg-red-500 text-white text-sm font-semibold py-1 px-3 rounded-full z-20">
-          {discountPercent}%
-          OFF
+      {!product.is_featured ? (
+        <span className="absolute top-3 left-3 bg-green-600 text-white text-sm font-semibold py-1 px-3 rounded-full z-20 border-blue-700">
+          NEW
         </span>
+      ) : (
+        product.discount && (
+          <span className="absolute top-3 left-3 bg-red-500 text-white text-sm font-semibold py-1 px-3 rounded-full z-20 border-red-700">
+            {discountPercent}% OFF
+          </span>
+        )
       )}
+
 
       {/* Image Section */}
       <div className="relative w-full h-[280px] overflow-hidden">
         <img
-          src={dummyImage}
-          // src={product.image || dummyImage}
+          // src={dummyImage}
+          src={product.image || dummyImage}
           alt={product.imageAlt}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300 z-0"
         />
