@@ -19,16 +19,16 @@ const Footer = () => {
               <h2 className="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white">Quick Links</h2>
               <ul className="text-gray-500 dark:text-gray-400 font-medium">
                 <li className="mb-4">
-                  <Link to="/product" className="hover:underline">Men</Link>
+                  <Link to="/products?gender=men" className="hover:underline">Men</Link>
                 </li>
                 <li className="mb-4">
-                  <Link to="/product" className="hover:underline">Women</Link>
+                  <Link to="/products?gender=women" className="hover:underline">Women</Link>
                 </li>
                 <li className="mb-4">
-                  <Link to="/product" className="hover:underline">Kids</Link>
+                  <Link to="/products?gender=kids" className="hover:underline">Kids</Link>
                 </li>
                 <li className="mb-4">
-                  <Link to="/product" className="hover:underline">On Sale</Link>
+                  <Link to="/products" className="hover:underline">On Sale</Link>
                 </li>
               </ul>
             </div>

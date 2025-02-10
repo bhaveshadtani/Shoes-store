@@ -3,41 +3,13 @@ import dummyImage from "../../../assets/images/dummy-image.webp";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShoppingCart, faStar } from "@fortawesome/free-solid-svg-icons";
 import { faHeart as faHeartOutline } from '@fortawesome/free-regular-svg-icons';
-import { faHeart as faHeartSolid } from '@fortawesome/free-solid-svg-icons';
-import { useEffect, useState } from "react";
 
 const ProductCard = ({ product }: { product: ProductType }) => {
   const discountPercent = Math.round(((parseFloat(product.discount) - parseFloat(product.unit_price)) / parseFloat(product.unit_price)) * 100)
-  const [likedProducts, setLikedProducts] = useState<number[]>(() => {
-    const savedLikes = localStorage.getItem('likedProducts');
-    return savedLikes ? JSON.parse(savedLikes) : [];
-  });
-
-  useEffect(() => {
-    localStorage.setItem('likedProducts', JSON.stringify(likedProducts));
-  }, [likedProducts]);
-
-  const handleLikeClick = (productId: number) => {
-    setLikedProducts((prevLikedProducts) => {
-      if (prevLikedProducts.includes(productId)) {
-        return prevLikedProducts.filter((id) => id !== productId);
-      } else {
-        return [...prevLikedProducts, productId];
-      }
-    });
-  };
-
-  const isLiked = likedProducts.includes(product.product_variant_id);
-
   return (
     <div className="bg-white shadow-lg rounded-lg overflow-hidden group transition-all transform hover:scale-105 hover:shadow-xl cursor-pointer relative">
-      <div
-        className="absolute top-3 right-3 bg-white w-10 h-10 flex items-center justify-center rounded-full cursor-pointer hover:bg-gray-200 transition z-10"
-        onClick={() => handleLikeClick(product.product_variant_id)}>
-        <FontAwesomeIcon
-          icon={isLiked ? faHeartSolid : faHeartOutline}
-          className="text-red-500 text-xl"
-        />
+      <div className="absolute top-3 right-3 bg-white w-10 h-10 flex items-center justify-center rounded-full cursor-pointer hover:bg-gray-200 transition z-10">
+        <FontAwesomeIcon icon={faHeartOutline} className="text-red-500 text-xl" />
       </div>
 
       {product.discount && (
@@ -50,8 +22,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
       {/* Image Section */}
       <div className="relative w-full h-[280px] overflow-hidden">
         <img
-          src={dummyImage}
-          // src={product.image || dummyImage}
+          src={product.imageSrc || dummyImage}
           alt={product.imageAlt}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300 z-0"
         />

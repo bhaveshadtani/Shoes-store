@@ -12,7 +12,6 @@ export interface ProductType {
   color: string;
   average_rating: any;
   is_featured?: boolean;
-  product_variant_id: number;
 }
 
 export interface ProductNavigationProps {

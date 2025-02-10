@@ -51,7 +51,7 @@ const ShoeCarousel = () => {
         {slides.map((slide) => (
           <div key={slide.id} className="w-full flex-shrink-0 relative">
             <img
-              src={slide.image}
+              src={slide.imageSrc}
               alt={slide.title}
               className="w-full h-full object-cover"
             />

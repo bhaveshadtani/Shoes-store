@@ -1,303 +1,311 @@
-import { useNavigate } from 'react-router-dom';
+import React, { Fragment, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHeart, faShareAlt, faStar } from "@fortawesome/free-solid-svg-icons";
+import PropTypes from "prop-types";
 
-const Cart = () => {
-  
-  const navigate = useNavigate();
+const product = {
+  title: "Beats Headphone 2019",
+  previews: [
+    {
+      previewUrl:
+        "https://cdn.easyfrontend.com/pictures/ecommerce/headphone2.png",
+      thumbUrl:
+        "https://cdn.easyfrontend.com/pictures/ecommerce/headphone2-1.png",
+    },
+    {
+      previewUrl:
+        "https://cdn.easyfrontend.com/pictures/ecommerce/headphone2-2.png",
+      thumbUrl:
+        "https://cdn.easyfrontend.com/pictures/ecommerce/headphone2-2.png",
+    },
+    {
+      previewUrl:
+        "https://cdn.easyfrontend.com/pictures/ecommerce/headphone2-3.png",
+      thumbUrl:
+        "https://cdn.easyfrontend.com/pictures/ecommerce/headphone2-3.png",
+    },
+  ],
+  rating: 5.0,
+  rateCount: 1256,
+  price: 27351,
+  colorVariants: [
+    { bgcolor: "bg-yellow-500", value: "Multi" },
+    { bgcolor: "bg-blue-500", value: "Blue" },
+    { bgcolor: "bg-red-400", value: "Pink" },
+    { bgcolor: "bg-black", value: "Black" },
+    { bgcolor: "bg-red-600", value: "Red" },
+  ],
+  sizeVariants: [
+    { label: "XXS", value: "SSX", title: "Extra extra small" },
+    { label: "XS", value: "XS", title: "Extra small" },
+    { label: "S", value: "S", title: "Small" },
+    { label: "M", value: "M", title: "Medium" },
+    { label: "L", value: "L", title: "Large" },
+    { label: "XL", value: "XL", title: "Extra large" },
+    { label: "XXL", value: "XXL", title: "Extra extra large" },
+    {
+      label: "XXXL",
+      value: "XXXL",
+      title: "Extra extra extra large",
+      disabled: true,
+    },
+  ],
+};
+
+const ProductPreviews = ({ previews }: any) => {
+  const [index, setIndex] = useState(0);
+
   return (
-    <div className="font-[sans-serif] bg-white h-full">
-      <div className="max-w-7xl max-lg:max-w-3xl mx-auto p-6">
-        <h2 className="text-3xl font-extrabold text-gray-800">
-          Your shopping bag
-        </h2>
+    <div className="bg-gray-100 rounded-xl p-4 sm:p-6 lg:p-12 lg:mr-6">
+      <div className="text-center mb-4 md:p-6">
+        <img
+          src={previews[index].previewUrl}
+          alt=""
+          className="max-w-full h-auto w-full"
+        />
+      </div>
 
-        <div className="grid lg:grid-cols-3 gap-6 relative mt-8">
-          <div className="lg:col-span-2 space-y-6">
-            <div className="p-2 bg-white shadow-[0_3px_20px_-10px_rgba(6,81,237,0.4)] rounded-md relative">
-              <div className="grid sm:grid-cols-2 items-center gap-4">
-                <div className="bg-gradient-to-tr from-gray-300 via-gray-100 rounded-md to-gray-50 w-full h-full p-4 shrink-0 text-center">
-                  <img
-                    src="https://readymadeui.com/images/product10.webp"
-                    className="w-56 h-full object-contain inline-block"
-                  />
-                </div>
+      <ul className="flex gap-3">
+        {previews.map((preview: any, index: number) => (
+          <li
+            className="w-24 h-24 flex justify-center items-center p-2 rounded-md border border-gray-200 cursor-pointer"
+            key={index}
+            onClick={() => setIndex(index)}
+          >
+            <img src={preview.thumbUrl} alt="" className="max-w-full h-auto" />
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
 
-                <div className="p-2">
-                  <h3 className="text-lg font-bold text-gray-800">
-                    Naruto: Split Sneakers
-                  </h3>
+ProductPreviews.propTypes = {
+  previews: PropTypes.array.isRequired,
+};
 
-                  <ul className="text-sm text-gray-500 space-y-2 list-disc pl-4 mt-3">
-                    <li>UK7.</li>
-                    <li>Dutch support for extra comfort.</li>
-                    <li>Cushioned insole with soft breathable lining.</li>
-                    <li>
-                      Upper material is made of PU that is comfortable,
-                      lightweight, easy to clean.
-                    </li>
-                  </ul>
+const ColorVariant = () => {
+  const [selectedColor, setSelectedColor] = useState("Multi");
 
-                  <div className="flex items-center justify-between flex-wrap gap-4 mt-6">
-                    <div className="flex items-center gap-3">
-                      <h4 className="text-sm text-gray-500">Qty:</h4>
-                      <button
-                        type="button"
-                        className="flex items-center justify-center w-5 h-5 bg-blue-600 outline-none rounded-full"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="w-2 fill-white"
-                          viewBox="0 0 124 124"
-                        >
-                          <path
-                            d="M112 50H12C5.4 50 0 55.4 0 62s5.4 12 12 12h100c6.6 0 12-5.4 12-12s-5.4-12-12-12z"
-                            data-original="#000000"
-                          ></path>
-                        </svg>
-                      </button>
-                      <span className="font-bold text-sm leading-[16px]">
-                        2
-                      </span>
-                      <button
-                        type="button"
-                        className="flex items-center justify-center w-5 h-5 bg-blue-600 outline-none rounded-full"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="w-2 fill-white"
-                          viewBox="0 0 42 42"
-                        >
-                          <path
-                            d="M37.059 16H26V4.941C26 2.224 23.718 0 21 0s-5 2.224-5 4.941V16H4.941C2.224 16 0 18.282 0 21s2.224 5 4.941 5H16v11.059C16 39.776 18.282 42 21 42s5-2.224 5-4.941V26h11.059C39.776 26 42 23.718 42 21s-2.224-5-4.941-5z"
-                            data-original="#000000"
-                          ></path>
-                        </svg>
-                      </button>
-                    </div>
+  const handleColorChange = (value: any) => {
+    setSelectedColor(value);
+  };
 
-                    <div>
-                      <h4 className="text-lg font-bold text-blue-600">
-                        $70.00
-                      </h4>
-                    </div>
-                  </div>
-
-                  <div className="divide-x border-y grid grid-cols-2 text-center mt-6">
-                    <button
-                      type="button"
-                      className="bg-transparent hover:bg-gray-100 flex items-center justify-center font-semibold py-3 text-gray-500 text-sm"
-                      onClick={() => navigate("/product-detail")}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="w-3.5 fill-current mr-3 inline-block"
-                        viewBox="0 0 128 128"
-                      >
-                        <path
-                          d="M64 104C22.127 104 1.367 67.496.504 65.943a4 4 0 0 1 0-3.887C1.367 60.504 22.127 24 64 24s62.633 36.504 63.496 38.057a4 4 0 0 1 0 3.887C126.633 67.496 105.873 104 64 104zM8.707 63.994C13.465 71.205 32.146 96 64 96c31.955 0 50.553-24.775 55.293-31.994C114.535 56.795 95.854 32 64 32 32.045 32 13.447 56.775 8.707 63.994zM64 88c-13.234 0-24-10.766-24-24s10.766-24 24-24 24 10.766 24 24-10.766 24-24 24zm0-40c-8.822 0-16 7.178-16 16s7.178 16 16 16 16-7.178 16-16-7.178-16-16-16z"
-                          data-original="#000000"
-                        ></path>
-                      </svg>
-                      View details
-                    </button>
-                    <button
-                      type="button"
-                      className="bg-transparent hover:bg-gray-100 flex items-center justify-center font-semibold py-3 text-gray-500 text-sm"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="w-3 fill-current mr-3 inline-block"
-                        viewBox="0 0 390 390"
-                      >
-                        <path
-                          d="M30.391 318.583a30.37 30.37 0 0 1-21.56-7.288c-11.774-11.844-11.774-30.973 0-42.817L266.643 10.665c12.246-11.459 31.462-10.822 42.921 1.424 10.362 11.074 10.966 28.095 1.414 39.875L51.647 311.295a30.366 30.366 0 0 1-21.256 7.288z"
-                          data-original="#000000"
-                        ></path>
-                        <path
-                          d="M287.9 318.583a30.37 30.37 0 0 1-21.257-8.806L8.83 51.963C-2.078 39.225-.595 20.055 12.143 9.146c11.369-9.736 28.136-9.736 39.504 0l259.331 257.813c12.243 11.462 12.876 30.679 1.414 42.922-.456.487-.927.958-1.414 1.414a30.368 30.368 0 0 1-23.078 7.288z"
-                          data-original="#000000"
-                        ></path>
-                      </svg>
-                      Remove
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-2 bg-white shadow-[0_3px_20px_-10px_rgba(6,81,237,0.4)] rounded-md relative">
-              <div className="grid sm:grid-cols-2 items-center gap-4">
-                <div className="bg-gradient-to-tr from-gray-300 via-gray-100 rounded-md to-gray-50 w-full h-full p-4 shrink-0 text-center">
-                  <img
-                    src="https://readymadeui.com/images/product11.webp"
-                    className="w-56 h-full object-contain inline-block"
-                  />
-                </div>
-
-                <div className="p-2">
-                  <h3 className="text-lg font-bold text-gray-800">
-                    Naruto: Split Sneakers
-                  </h3>
-
-                  <ul className="text-sm text-gray-500 space-y-2 list-disc pl-4 mt-3">
-                    <li>UK7.</li>
-                    <li>Dutch support for extra comfort.</li>
-                    <li>Cushioned insole with soft breathable lining.</li>
-                    <li>
-                      Upper material is made of PU that is comfortable,
-                      lightweight, easy to clean.
-                    </li>
-                  </ul>
-
-                  <div className="flex items-center justify-between flex-wrap gap-4 mt-6">
-                    <div className="flex items-center gap-3">
-                      <h4 className="text-sm text-gray-500">Qty:</h4>
-                      <button
-                        type="button"
-                        className="flex items-center justify-center w-5 h-5 bg-blue-600 outline-none rounded-full"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="w-2 fill-white"
-                          viewBox="0 0 124 124"
-                        >
-                          <path
-                            d="M112 50H12C5.4 50 0 55.4 0 62s5.4 12 12 12h100c6.6 0 12-5.4 12-12s-5.4-12-12-12z"
-                            data-original="#000000"
-                          ></path>
-                        </svg>
-                      </button>
-                      <span className="font-bold text-sm leading-[16px]">
-                        2
-                      </span>
-                      <button
-                        type="button"
-                        className="flex items-center justify-center w-5 h-5 bg-blue-600 outline-none rounded-full"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="w-2 fill-white"
-                          viewBox="0 0 42 42"
-                        >
-                          <path
-                            d="M37.059 16H26V4.941C26 2.224 23.718 0 21 0s-5 2.224-5 4.941V16H4.941C2.224 16 0 18.282 0 21s2.224 5 4.941 5H16v11.059C16 39.776 18.282 42 21 42s5-2.224 5-4.941V26h11.059C39.776 26 42 23.718 42 21s-2.224-5-4.941-5z"
-                            data-original="#000000"
-                          ></path>
-                        </svg>
-                      </button>
-                    </div>
-
-                    <div>
-                      <h4 className="text-lg font-bold text-blue-600">
-                        $70.00
-                      </h4>
-                    </div>
-                  </div>
-
-                  <div className="divide-x border-y grid grid-cols-2 text-center mt-6">
-                    <button
-                      type="button"
-                      className="bg-transparent hover:bg-gray-100 flex items-center justify-center font-semibold py-3 text-gray-500 text-sm"
-                      onClick={() => navigate("/product-detail")}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="w-3.5 fill-current mr-3 inline-block"
-                        viewBox="0 0 128 128"
-                      >
-                        <path
-                          d="M64 104C22.127 104 1.367 67.496.504 65.943a4 4 0 0 1 0-3.887C1.367 60.504 22.127 24 64 24s62.633 36.504 63.496 38.057a4 4 0 0 1 0 3.887C126.633 67.496 105.873 104 64 104zM8.707 63.994C13.465 71.205 32.146 96 64 96c31.955 0 50.553-24.775 55.293-31.994C114.535 56.795 95.854 32 64 32 32.045 32 13.447 56.775 8.707 63.994zM64 88c-13.234 0-24-10.766-24-24s10.766-24 24-24 24 10.766 24 24-10.766 24-24 24zm0-40c-8.822 0-16 7.178-16 16s7.178 16 16 16 16-7.178 16-16-7.178-16-16-16z"
-                          data-original="#000000"
-                        ></path>
-                      </svg>
-                      View details
-                    </button>
-                    <button
-                      type="button"
-                      className="bg-transparent hover:bg-gray-100 flex items-center justify-center font-semibold py-3 text-gray-500 text-sm"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="w-3 fill-current mr-3 inline-block"
-                        viewBox="0 0 390 390"
-                      >
-                        <path
-                          d="M30.391 318.583a30.37 30.37 0 0 1-21.56-7.288c-11.774-11.844-11.774-30.973 0-42.817L266.643 10.665c12.246-11.459 31.462-10.822 42.921 1.424 10.362 11.074 10.966 28.095 1.414 39.875L51.647 311.295a30.366 30.366 0 0 1-21.256 7.288z"
-                          data-original="#000000"
-                        ></path>
-                        <path
-                          d="M287.9 318.583a30.37 30.37 0 0 1-21.257-8.806L8.83 51.963C-2.078 39.225-.595 20.055 12.143 9.146c11.369-9.736 28.136-9.736 39.504 0l259.331 257.813c12.243 11.462 12.876 30.679 1.414 42.922-.456.487-.927.958-1.414 1.414a30.368 30.368 0 0 1-23.078 7.288z"
-                          data-original="#000000"
-                        ></path>
-                      </svg>
-                      Remove
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white h-max rounded-md p-4 shadow-[0_3px_20px_-10px_rgba(6,81,237,0.4)] sticky top-0">
-            <h3 className="text-lg font-bold text-gray-800">Order Summary</h3>
-
-            <ul className="text-gray-500 text-sm space-y-3 mt-3">
-              <li className="flex flex-wrap gap-4">
-                Subtotal <span className="ml-auto font-bold">$70.00</span>
-              </li>
-              <li className="flex flex-wrap gap-4">
-                Shipping <span className="ml-auto font-bold">Free</span>
-              </li>
-              <li className="flex flex-wrap gap-4">
-                Tax <span className="ml-auto font-bold">$4.00</span>
-              </li>
-              <li className="flex flex-wrap gap-4 font-bold">
-                Total <span className="ml-auto">$74.00</span>
-              </li>
-            </ul>
-
-            <button
-              type="button"
-              className="mt-6 text-sm px-6 py-3 w-full bg-blue-700 hover:bg-blue-800 tracking-wide text-white rounded-md"
-              onClick={() => navigate("/checkout")}
-            >
-              Make Payment
-            </button>
-
-            <div className="mt-6 space-y-6">
-              <div>
-                <h4 className="text-sm font-bold text-gray-800 mb-3">
-                  Secure payment
-                </h4>
-                <p className="text-sm text-gray-500">
-                  Experience peace of mind with our secure payment options,
-                  ensuring your transactions are protected and reliable.
-                </p>
-              </div>
-              <div>
-                <h4 className="text-sm font-bold text-gray-800 mb-3">
-                  Free delivery
-                </h4>
-                <p className="text-sm text-gray-500">
-                  Enjoy the convenience of free delivery on all your orders,
-                  providing a cost-effective and seamless shopping experience.
-                </p>
-              </div>
-              <div>
-                <h4 className="text-sm font-bold text-gray-800 mb-3">
-                  Easy to return
-                </h4>
-                <p className="text-sm text-gray-500">
-                  Simplify your shopping experience with hassle-free returns.
-                  Our easy return process ensures convenience and customer
-                  satisfaction.
-                </p>
-              </div>
-            </div>
-          </div>
+  return (
+    <>
+      <div className="mb-6">
+        <h5 className="font-medium mb-2">
+          Color:{" "}
+          <span className="opacity-50">
+            {selectedColor &&
+              product.colorVariants.find(
+                (color) => color.value === selectedColor
+              )?.value}
+          </span>
+        </h5>
+        <div className="flex gap-3">
+          {product.colorVariants.map((item, i) => (
+            <Fragment key={i}>
+              <input
+                type="radio"
+                className="absolute hidden"
+                autoComplete="off"
+                checked={selectedColor === item.value}
+                onChange={() => handleColorChange(item.value)}
+              />
+              <label
+                className={`w-8 h-8 rounded-full ${item.bgcolor} border-2 border-white cursor-pointer mt-1 hover:outline hover:outline-1 hover:outline-${item.bgcolor
+                  } ${selectedColor === item.value &&
+                  `outline outline-1 outline-${item.bgcolor}`}`}
+                onClick={() => handleColorChange(item.value)}
+              ></label>
+            </Fragment>
+          ))}
         </div>
+      </div>
+    </>
+  );
+};
+
+const SizeVariant = () => {
+  const [selectedSize, setSelectedSize] = useState("XXS");
+
+  const handleSizeChange = (value: string) => {
+    if (product.sizeVariants.find((size) => size.value === value)?.disabled) {
+      return;
+    }
+    setSelectedSize(value);
+  };
+
+  return (
+    <div className="mb-6">
+      <h5 className="font-medium mb-2">
+        Size:{" "}
+        <span className="opacity-50">
+          {selectedSize &&
+            product.sizeVariants.find((size) => size.value === selectedSize)
+              ?.title}
+        </span>
+      </h5>
+      <div className="flex flex-wrap gap-2 mb-2">
+        {product.sizeVariants.map((size) => (
+          <React.Fragment key={size.label}>
+            <input
+              type="radio"
+              className="absolute hidden"
+              autoComplete="off"
+              checked={selectedSize === size.label}
+              onChange={() => handleSizeChange(size.label)}
+            />
+            <label
+              className={`bg-gray-100 hover:bg-gray-200 cursor-pointer py-1 px-4 rounded-full border mt-1 ${selectedSize === size.label
+                ? "border-blue-600"
+                : "border-gray-300"
+                }  ${size.disabled
+                  ? "line-through opacity-40 cursor-not-allowed"
+                  : "cursor-pointer"
+                }`}
+              onClick={() => handleSizeChange(size.value)}
+            >
+              {size.label}
+            </label>
+          </React.Fragment>
+        ))}
       </div>
     </div>
   );
-}
+};
 
-export default Cart
+const QtyField = ({ name, value, onChange }: any) => {
+  const qtyControl = (qty: any) =>
+    onChange({
+      target: {
+        name,
+        type: "radio",
+        value: qty < 1 ? 1 : qty,
+      },
+    });
+
+  return (
+    <div className="flex h-11 w-24 mb-4">
+      <input
+        className="w-2/3 pl-2 text-center border border-black bg-white focus:outline-none rounded-lg overflow-hidden font-bold text-lg"
+        type="number"
+        placeholder=""
+        value={value}
+        onChange={(e) => qtyControl(e.target.value)}
+      />
+      <div className="w-1/3 rounded-lg overflow-hidden flex flex-col border border-black bg-white p-0">
+        <button
+          className="text-blue-600 hover:bg-blue-600 hover:text-white h-1/2 font-bold leading-none text-lg"
+          type="button"
+          onClick={() => qtyControl(parseInt(value) - 1)}
+        >
+          -
+        </button>
+        <button
+          className="text-blue-600 hover:bg-blue-600 hover:text-white h-1/2 font-bold leading-none text-lg"
+          type="button"
+          onClick={() => qtyControl(parseInt(value) + 1)}
+        >
+          +
+        </button>
+      </div>
+    </div>
+  );
+};
+
+QtyField.propTypes = {
+  name: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  value: PropTypes.any,
+};
+
+const Cart = () => {
+  const [formData, setFormData] = useState({
+    color: "Multi",
+    size: "XL",
+    qty: 1,
+  });
+
+  const setField = (e: any) => {
+    const { name, value, type, checked } = e.target;
+
+    setFormData({
+      ...formData,
+      [name]: type === "checkbox" ? checked : value,
+    });
+  };
+
+  return (
+    <section className="py-14 md:py-24 bg-white text-gray-900 relative overflow-hidden z-10">
+      <div className="container px-4 mx-auto">
+        <div className="flex flex-col lg:flex-row gap-6">
+          <div className="w-full lg:w-1/2">
+            <ProductPreviews previews={product.previews} />
+          </div>
+          <div className="w-full lg:w-1/2">
+            <div className="mb-6 lg:mb-12">
+              <h1 className="text-2xl leading-none md:text-4xl font-medium mb-4">
+                {product.title}
+              </h1>
+              <p className="opacity-70 mb-6">
+                <span>4.0</span>{" "}
+                <FontAwesomeIcon
+                  icon={faStar}
+                  className="mx-2 text-yellow-500"
+                />
+                <a href="#!" className="text-blue-600 font-medium ml-1">
+                  8 Reviews
+                </a>{" "}
+                <span className="ml-2">104 Order</span>
+              </p>
+              <p className="opacity-70 lg:mr-56 xl:mr-80 my-4">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque
+                nec consequat lorem. Maecenas elementum at diam consequat
+                bibendum.
+              </p>
+              <h3 className="text-2xl text-blue-600 font-medium">
+                Rs. {product.price}
+              </h3>
+            </div>
+
+            <form action="#!">
+              <div className="mb-6">
+                <ColorVariant />
+              </div>
+              <div className="mb-6">
+                <SizeVariant />
+              </div>
+              <div className="mb-6">
+                <h5 className="font-medium mb-2">QTY</h5>
+                <QtyField onChange={setField} name="qty" value={formData.qty} />
+              </div>
+
+              <div className="flex flex-col gap-3 w-full my-7">
+                <div className="flex items-center gap-4 w-full max-w-lg">
+                  <button className="bg-blue-600 border border-blue-600 text-white text-sm rounded uppercase hover:bg-opacity-90 px-10 py-2.5 h-10 md:px-12 w-1/2">
+                    Buy Now
+                  </button>
+                  <button className="border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white text-sm rounded uppercase px-6 py-2.5 h-10 md:px-12 w-1/2">
+                    Add To Cart
+                  </button>
+                </div>
+                <div className="flex items-center gap-4 w-full">
+                  <button className="hover:bg-blue-600 rounded hover:bg-opacity-10 text-blue-600 px-3 py-2">
+                    <FontAwesomeIcon icon={faHeart} /> Add to wishlist
+                  </button>
+                  <button className="hover:bg-blue-600 rounded hover:bg-opacity-10 text-blue-600 px-3 py-2">
+                    <FontAwesomeIcon icon={faShareAlt} className="mr-1" /> share
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default Cart;

@@ -34,7 +34,8 @@ const Product = () => {
           const latestArrivals = latestArrivalResponse?.data?.filter((prod: ProductType) => !prod?.is_featured);
           setLatestArrivalProducts(latestArrivals);
         }
-      } catch (err) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (error) {
         setError("Failed to fetch products.");
       } finally {
         setLoading(false);
