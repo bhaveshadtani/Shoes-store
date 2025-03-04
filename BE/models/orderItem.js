@@ -31,6 +31,8 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: 0.0,
     },
+  },{
+    tableName: "orderitem"
   });
 
   // OrderItem.sync({ alter: true });

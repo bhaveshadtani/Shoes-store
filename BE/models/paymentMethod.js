@@ -19,6 +19,8 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: true, // true for Active, false for Inactive
       comment: "false: Inactive, true: Active",
     },
+  },{
+    tableName: "paymentmethod",
   });
 
   return PaymentMethod;

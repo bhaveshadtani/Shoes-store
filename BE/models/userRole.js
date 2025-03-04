@@ -13,6 +13,8 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+  },{
+    tableName: "userrole",
   });
 
   return UserRole;
